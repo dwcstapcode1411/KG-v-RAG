@@ -1,0 +1,28 @@
+# CHÍNH SÁCH QUẢN TRỊ RỦI RO TÍN DỤNG VÀ PHÂN TÍCH CHỈ SỐ TÀI CHÍNH TOÀN CẦU
+
+[DocID: FIN-MACRO-01]
+1. KHỦNG HOẢNG TÀI CHÍNH TOÀN CẦU VÀ CƠ CHẾ LÂY LAN (FINANCIAL CONTAGION)
+Khủng hoảng tài chính toàn cầu 2008 (Global Financial Crisis - GFC) bắt nguồn từ sự đổ vỡ của thị trường chứng khoán thế chấp dưới chuẩn (Subprime Mortgages) tại Mỹ, sau đó nhanh chóng lan rộng ra hệ thống ngân hàng toàn cầu:
+- Chỉ số S&P 500 (Mỹ) ghi nhận mức sụt giảm tối đa (Max Drawdown) lên tới -60.73% trong năm 2008 với độ biến động quy năm đạt 48.62%.
+- Các thị trường mới nổi như NIFTY 50 (Ấn Độ) và SSE Composite (Trung Quốc) chịu mức sụt giảm nặng nề nhất, lần lượt là -78.95% và -76.71%.
+- Mối tương quan cao giữa các chỉ số thị trường phát triển (S&P 500 và DAX 40 đạt corr = 0.8408; S&P 500 và Nikkei 225 đạt corr = 0.7665) là bằng chứng rõ ràng cho hiệu ứng lây lan tài chính xuyên lục địa khi thanh khoản cạn kiệt.
+
+[DocID: FIN-MACRO-02]
+2. CÚ SỐC ĐẠI DỊCH COVID-19 VÀ SỰ PHỤC HỒI HÌNH CHỮ V (2020)
+Đại dịch COVID-19 vào đầu năm 2020 đã kích hoạt đợt bán tháo thanh khoản nhanh và bất ngờ nhất lịch sử tài chính hiện đại:
+- Khu vực Châu Âu chịu mức sụt giảm trung bình sâu nhất (-49.28%) do các lệnh phong tỏa xã hội nghiêm ngặt (FTSE 100 sụt giảm -51.36%, DAX 40 sụt giảm -47.19%).
+- Nhờ phản ứng chính sách tiền tệ khẩn cấp của Cục Dự trữ Liên bang Mỹ (Fed) đưa lãi suất về 0% và tung ra các gói kích thích định lượng không giới hạn, các chỉ số chứng khoán toàn cầu đã phục hồi hình chữ V ngoạn mục, đưa lợi suất cả năm 2020 của S&P 500 đạt +38.75% và Nikkei 225 đạt mức tăng trưởng kỷ lục.
+
+[DocID: FIN-CREDIT-03]
+3. NGUYÊN TẮC ĐÁNH GIÁ RỦI RO TÍN DỤNG VÀ XẾP HẠNG TÍN NHIỆM
+Trong phân tích tín dụng doanh nghiệp và cá nhân, rủi ro vỡ nợ (Default Risk) được lượng hóa dựa trên các chỉ số tài chính cốt lõi:
+- Tỷ lệ nợ trên thu nhập (Debt-to-Income - DTI): Ngưỡng an toàn khuyến nghị thường dưới 36% - 40%. Vượt quá 45% được xếp vào nhóm có nguy cơ mất khả năng thanh toán cao.
+- Khả năng thanh toán lãi vay (Interest Coverage Ratio - ICR): Đo lường bằng EBIT chia cho chi phí lãi vay. ICR < 1.5 báo hiệu rủi ro kiệt quệ tài chính.
+- Điểm tín dụng (Credit Score): Phản ánh lịch sử hoàn trả nợ và tỷ lệ sử dụng hạn mức (Credit Utilization). Sử dụng quá 30% hạn mức thẻ tín dụng làm giảm mạnh điểm uy tín tín dụng.
+
+[DocID: FIN-RISK-04]
+4. CHU KỲ THẮT CHẶT TIỀN TỆ CỦA FED VÀ ÁP LỰC ĐỊNH GIÁ (2022)
+Năm 2022 đánh dấu bước ngoặt chính sách khi Fed thực hiện 7 đợt tăng lãi suất liên tiếp với cường độ 75 điểm cơ bản mỗi lần để đối phó với lạm phát cao nhất 40 năm:
+- Lãi suất chiết khấu tăng mạnh khiến định giá của các cổ phiếu tăng trưởng công nghệ bị thu hẹp đáng kể.
+- S&P 500 chịu sụt giảm -27.86% trong năm 2022 và rơi vào thị trường gấu (Bear Market).
+- Việc chi phí vốn tăng cao cũng làm gia tăng rủi ro nợ xấu trong danh mục cho vay tiêu dùng và bất động sản thương mại của các ngân hàng.

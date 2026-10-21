@@ -1,0 +1,23 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Cấu hình bảo mật môi trường
+.env
+
+# Tệp dữ liệu lớn (tránh vượt hạn mức 100MB của GitHub)
+*.csv.gz
+all_indices_data.csv
+
+# IDE & Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Streamlit local credentials
+.streamlit/secrets.toml

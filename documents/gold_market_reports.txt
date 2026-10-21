@@ -1,0 +1,24 @@
+# BÁO CÁO TOÀN CẢNH THỊ TRƯỜNG VÀNG VÀ XU HƯỚNG GIÁ VÀNG (WORLD GOLD COUNCIL & MACRO)
+
+[DocID: WGC-GOLD-01]
+1. NHU CẦU TRÚ ẨN AN TOÀN TRONG CĂNG THẲNG ĐỊA CHÍNH TRỊ (SAFE-HAVEN DEMAND)
+Hội đồng Vàng Thế giới (World Gold Council - WGC) nhấn mạnh vàng là tài sản phòng thủ tối thượng khi xuất hiện các cú sốc địa chính trị:
+- Khi chiến sự Nga - Ukraine bùng phát (tháng 2/2022), giá vàng quốc tế đã tăng vọt +2.93% trong 5 ngày trước cuộc xung đột và tiếp tục tăng mạnh vượt mốc 2,050 USD/oz khi phương Tây áp đặt các lệnh trừng phạt tài chính.
+- Khi xung đột vũ trang Hamas - Israel nổ ra (tháng 10/2023), giá vàng ghi nhận mức tăng +3.75% chỉ trong 5 phiên giao dịch tiếp theo, chứng minh độ nhạy cảm cao của kim loại quý đối với rủi ro bất ổn khu vực Trung Đông.
+
+[DocID: WGC-GOLD-02]
+2. TÁC ĐỘNG CỦA LÃI SUẤT THỰC VÀ CHÍNH SÁCH TIỀN TỆ CỦA CỤC DỰ TRỮ LIÊN BANG (FED)
+Mối quan hệ giữa giá vàng và chính sách tiền tệ của Fed tuân theo quy luật kinh tế học vĩ mô rõ rệt:
+- Lãi suất danh nghĩa và lợi suất trái phiếu kho bạc Mỹ (đặc biệt là lãi suất thực TIPS) có mối tương quan nghịch biến chặt chẽ với giá vàng. Khi Fed tăng mạnh lãi suất năm 2022, giá vàng chịu áp lực điều chỉnh sâu do chi phí cơ hội nắm giữ tăng.
+- Ngược lại, thời điểm Fed chính thức phát đi tín hiệu đảo chiều và quyết định cắt giảm lãi suất 50 điểm cơ bản vào tháng 9/2024, giá vàng đã bứt phá +3.31% sau 5 phiên và liên tục thiết lập các mốc đỉnh lịch sử mọi thời đại (All-Time High) trên 2,600 USD/oz.
+
+[DocID: WGC-GOLD-03]
+3. LÀN SÓNG GOM MUA VÀNG CỦA CÁC NGÂN HÀNG TRUNG ƯƠNG (CENTRAL BANK PURCHASES)
+Giai đoạn 2022 - 2026 ghi nhận khối lượng mua ròng vàng kỷ lục từ các ngân hàng trung ương trên toàn thế giới, dẫn đầu bởi Ngân hàng Nhân dân Trung Quốc (PBoC), Ngân hàng Dự trữ Ấn Độ (RBI) và các quốc gia BRICS:
+- Xu hướng phi đô-la hóa (De-dollarization) và mong muốn đa dạng hóa dự trữ ngoại hối để giảm thiểu rủi ro trừng phạt tài sản USD đã tạo ra một "bệ đỡ giá" (price floor) kiên cố, giúp giá vàng duy trì trạng thái Uptrend trong hơn 53% thời gian của giai đoạn 2021-2026.
+
+[DocID: TECH-GOLD-04]
+4. CHỈ BÁO KỸ THUẬT RSI VÀ DẢI BOLLINGER TRONG GIAO DỊCH VÀNG
+Phân tích kỹ thuật trên dữ liệu chuỗi thời gian giá vàng chỉ ra hai quy luật định lượng quan trọng:
+- Hiện tượng hồi quy trung bình (Mean-reversion) khi RSI rơi vào vùng Quá bán (Oversold, RSI < 30): Xác suất giá vàng phục hồi sau 5 phiên giao dịch (T+5) đạt 61.5% với mức lợi suất trung bình dương +0.66%.
+- Cảnh báo điều chỉnh khi giá chạm vùng Quá mua (Overbought, RSI > 70) đồng thời vượt ra ngoài Dải trên Bollinger Bands (Above upper band): Đánh dấu trạng thái thị trường hưng phấn quá đà (Euphoria/Overextension), dự báo rủi ro chốt lời kỹ thuật ngắn hạn rất cao.

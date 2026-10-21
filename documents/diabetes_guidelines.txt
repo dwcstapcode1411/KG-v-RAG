@@ -1,0 +1,37 @@
+# HƯỚNG DẪN LÂM SÀNG CHẨN ĐOÁN VÀ ĐIỀU TRỊ BỆNH ĐÁI THÁO ĐƯỜNG (ADA & WHO)
+
+[DocID: ADA-DIAB-01]
+1. TIÊU CHUẨN CHẨN ĐOÁN ĐÁI THÁO ĐƯỜNG THEO ADA (STANDARDS OF CARE IN DIABETES)
+Theo Hiệp hội Đái tháo đường Hoa Kỳ (ADA), tiêu chuẩn chẩn đoán bệnh đái tháo đường xác định bao gồm một trong các tiêu chí sau:
+- Chỉ số HbA1c >= 6.5% (được thực hiện tại phòng xét nghiệm được chứng nhận NGSP).
+- Đường huyết lúc đói (Fasting Plasma Glucose - FPG) >= 126 mg/dL (7.0 mmol/L) sau nhịn ăn ít nhất 8 giờ.
+- Đường huyết 2 giờ sau nghiệm pháp dung nạp glucose đường uống (OGTT 75g) >= 200 mg/dL (11.1 mmol/L).
+- Bệnh nhân có triệu chứng kinh điển của tăng đường huyết (uống nhiều, tiểu nhiều, sụt cân không rõ nguyên nhân) kèm đường huyết ngẫu nhiên >= 200 mg/dL (11.1 mmol/L).
+
+[DocID: ADA-DIAB-02]
+2. TIỀN ĐÁI THÁO ĐƯỜNG VÀ CÁC NGƯỠNG NGUY CƠ (PREDIABETES)
+Tiền đái tháo đường là tình trạng rối loạn chuyển hóa glucose nhưng chưa đạt ngưỡng chẩn đoán đái tháo đường:
+- HbA1c từ 5.7% đến 6.4%.
+- Rối loạn đường huyết lúc đói (Impaired Fasting Glucose - IFG): FPG từ 100 đến 125 mg/dL.
+- Rối loạn dung nạp glucose (Impaired Glucose Tolerance - IGT): Glucose 2 giờ sau OGTT từ 140 đến 199 mg/dL.
+Bệnh nhân tiền đái tháo đường có nguy cơ rất cao tiến triển thành đái tháo đường type 2 thực sự và tăng nguy cơ biến chứng tim mạch nếu không có can thiệp lối sống hoặc điều trị phòng ngừa.
+
+[DocID: WHO-DIAB-03]
+3. YẾU TỐ NGUY CƠ BÉO PHÌ VÀ CHỈ SỐ KHỐI CƠ THỂ (BMI)
+Tổ chức Y tế Thế giới (WHO) và ADA khẳng định thừa cân và béo phì là nguyên nhân hàng đầu thúc đẩy đề kháng insulin ngoại vi:
+- BMI bình thường: 18.5 - 24.9 kg/m2.
+- Thừa cân (Overweight): BMI từ 25.0 - 29.9 kg/m2.
+- Béo phì (Obese): BMI >= 30.0 kg/m2 (với người châu Á, ngưỡng béo phì khuyến nghị là >= 27.5 kg/m2).
+Người béo phì có nguy cơ mắc tiểu đường type 2 cao gấp 5 đến 7 lần so với người có thể trạng bình thường. Giảm tối thiểu 5% - 7% trọng lượng cơ thể kết hợp hoạt động thể lực 150 phút/tuần giúp giảm 58% nguy cơ tiến triển thành bệnh tiểu đường.
+
+[DocID: CLIN-DIAB-04]
+4. ĐỒNG MẮC TĂNG HUYẾT ÁP VÀ HỘI CHỨNG CHUYỂN HÓA (COMORBIDITY)
+Tăng huyết áp (Huyết áp tâm thu >= 130 mmHg hoặc tâm trương >= 80 mmHg theo chuẩn ACC/AHA) đồng mắc ở hơn 30% - 50% bệnh nhân đái tháo đường:
+- Sự kết hợp giữa tăng huyết áp và tăng đường huyết làm gia tăng theo cấp số nhân nguy cơ tổn thương vi mạch (bệnh võng mạc, bệnh thận đái tháo đường) và biến cố xơ vữa mạch máu lớn (nhồi máu cơ tim, đột quỵ).
+- Hướng dẫn ADA khuyến nghị mục tiêu kiểm soát huyết áp ở bệnh nhân tiểu đường là < 130/80 mmHg. Thuốc ức chế men chuyển (ACEI) hoặc chẹn thụ thể ARB được khuyến nghị hàng đầu để bảo vệ chức năng thận.
+
+[DocID: THER-DIAB-05]
+5. CHIẾN LƯỢC ĐIỀU TRỊ VÀ SỬ DỤNG THUỐC
+- Metformin là liệu pháp dược lý bậc một được chỉ định ngay khi chẩn đoán đái tháo đường type 2, trừ khi có chống chỉ định suy thận nặng (eGFR < 30 mL/min).
+- Thuốc ức chế SGLT2 (Empagliflozin, Dapagliflozin) và đồng vận thụ thể GLP-1 (Semaglutide, Liraglutide) được ưu tiên bổ sung cho bệnh nhân có bệnh tim mạch xơ vữa hoặc bệnh thận mạn tính, độc lập với mức HbA1c ban đầu.
+- Mục tiêu kiểm soát đường huyết tổng quát là duy trì HbA1c < 7.0% ở đa số người trưởng thành không mang thai.
