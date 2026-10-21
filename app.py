@@ -14,6 +14,7 @@ import os
 import sys
 import time
 import pandas as pd
+import numpy as np
 import streamlit as st
 
 # Đảm bảo in tiếng Việt chuẩn trên Windows
