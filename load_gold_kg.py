@@ -37,9 +37,9 @@ try:
     from neo4j import GraphDatabase, Driver
     from neo4j.exceptions import ServiceUnavailable, AuthError, ConfigurationError
 except ImportError:
-    print("[ERROR] Thư viện 'neo4j' chưa được cài đặt!")
-    print("Vui lòng chạy: pip install neo4j python-dotenv")
-    sys.exit(1)
+    # Fallback to mock mode; GraphDatabase will be None and handled later
+    GraphDatabase = None  # type: ignore
+    Driver = None  # type: ignore
 
 
 # =============================================================================
@@ -115,49 +115,16 @@ GOLD_MACRO_EVENTS = [
 # =============================================================================
 # 1. KẾT NỐI VÀ CẤU HÌNH NEO4J
 # =============================================================================
+import utils
+
 def get_neo4j_config(args: argparse.Namespace) -> Dict[str, str]:
     """Lấy thông tin cấu hình Neo4j từ CLI flags hoặc biến môi trường."""
-    uri = args.uri or os.getenv("NEO4J_URI") or "bolt://localhost:7687"
-    username = args.username or os.getenv("NEO4J_USERNAME") or os.getenv("NEO4J_USER") or "neo4j"
-    password = args.password or os.getenv("NEO4J_PASSWORD") or "password"
-    database = args.database or os.getenv("NEO4J_DATABASE") or "neo4j"
-    return {
-        "uri": uri,
-        "username": username,
-        "password": password,
-        "database": database
-    }
+    return utils.get_neo4j_config(args)
 
 
-def connect_neo4j(config: Dict[str, str]) -> Driver:
+def connect_neo4j(config: Dict[str, str]):
     """Kiểm tra và thiết lập kết nối tới Neo4j Driver."""
-    print("=" * 75)
-    print(" BƯỚC 1: KẾT NỐI VÀ XÁC THỰC CƠ SỞ DỮ LIỆU ĐỒ THỊ NEO4J")
-    print("=" * 75)
-    print(f"[*] URI      : {config['uri']}")
-    print(f"[*] Username : {config['username']}")
-    print(f"[*] Database : {config['database']}")
-    print("[*] Đang kiểm tra kết nối...")
-
-    try:
-        driver = GraphDatabase.driver(
-            config["uri"],
-            auth=(config["username"], config["password"])
-        )
-        driver.verify_connectivity()
-        print("[+] Kết nối Neo4j thành công! CSDL đã sẵn sàng tiếp nhận dữ liệu.\n")
-        return driver
-    except AuthError as e:
-        print(f"\n[!] LỖI XÁC THỰC: Sai tên người dùng hoặc mật khẩu! Chi tiết: {e}")
-        sys.exit(1)
-    except ServiceUnavailable as e:
-        print(f"\n[!] LỖI KẾT NỐI: Không thể kết nối tới {config['uri']}")
-        print(f"    Chi tiết: {e}")
-        print("    -> Vui lòng kiểm tra lại dịch vụ Neo4j hoặc chạy tham số --dry-run để chạy mô phỏng.")
-        sys.exit(1)
-    except Exception as e:
-        print(f"\n[!] Lỗi không xác định khi kết nối Neo4j: {e}")
-        sys.exit(1)
+    return utils.connect_neo4j(config)
 
 
 # =============================================================================

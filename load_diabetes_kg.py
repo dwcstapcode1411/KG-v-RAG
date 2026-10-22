@@ -34,9 +34,9 @@ try:
     from neo4j import GraphDatabase, Driver
     from neo4j.exceptions import ServiceUnavailable, AuthError, ConfigurationError
 except ImportError:
-    print("[ERROR] Thư viện 'neo4j' chưa được cài đặt!")
-    print("Vui lòng chạy: pip install neo4j python-dotenv")
-    sys.exit(1)
+    # Fallback to mock mode; GraphDatabase will be None and handled later
+    GraphDatabase = None  # type: ignore
+    Driver = None  # type: ignore
 
 
 # =============================================================================

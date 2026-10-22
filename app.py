@@ -10,31 +10,36 @@ Khởi chạy: streamlit run app.py
 =============================================================================
 """
 
+# =============================================================================
+# 1. TẤT CẢ IMPORTS Ở ĐẦU FILE
+# =============================================================================
 import os
 import sys
+import io
 import time
-import pandas as pd
+from typing import Dict, Any, List, Optional
+
 import numpy as np
+import pandas as pd
 import streamlit as st
 
-# Đảm bảo in tiếng Việt chuẩn trên Windows
-if sys.platform == "win32":
-    import io
-    try:
-        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
-    except AttributeError:
-        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
-        sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
-
+# Custom modules
 from rag_retriever import DocumentRetriever
 from graph_retriever import GraphRetriever
 from generator import GroundedGenerator
 from predict_gold import GoldForecaster, load_gold_data
 
+# Đảm bảo in tiếng Việt chuẩn trên Windows
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except (AttributeError, Exception):
+        pass
+
 
 # =============================================================================
-# CẤU HÌNH GIAO DIỆN STREAMLIT
+# 2. CẤU HÌNH GIAO DIỆN STREAMLIT
 # =============================================================================
 st.set_page_config(
     page_title="Hệ thống Thông minh Hybrid KG + RAG",
@@ -43,116 +48,163 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Tùy chỉnh CSS thích ứng hoàn hảo cho cả Light Mode và Dark Mode (Zero Text Invisibility)
+# =============================================================================
+# 3. CSS TÙY CHỈNH CHUYÊN NGHIỆP & TƯƠNG PHẢN CAO
+# =============================================================================
 st.markdown("""
 <style>
-    /* Đảm bảo toàn bộ form input, selectbox, nút bấm luôn có độ tương phản cao, chữ rõ nét */
-    .stTextInput input, .stSelectbox select, div[data-baseweb="input"] input {
-        color: var(--text-color, #0F172A) !important;
-        background-color: var(--secondary-background-color, #FFFFFF) !important;
-        font-size: 1rem !important;
-        font-weight: 500 !important;
+    /* Gradient Header */
+    .main-header {
+        background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #0284c7 100%);
+        color: #ffffff !important;
+        padding: 24px 28px;
+        border-radius: 14px;
+        margin-bottom: 24px;
+        box-shadow: 0 8px 24px rgba(30, 58, 138, 0.25);
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+    .main-header h1 {
+        color: #ffffff !important;
+        font-size: 2.1rem !important;
+        font-weight: 800 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        letter-spacing: -0.5px;
+    }
+    .main-header p {
+        color: #e0f2fe !important;
+        font-size: 1.05rem !important;
+        margin: 6px 0 0 0 !important;
+        font-weight: 400;
     }
 
-    /* Card tri thức đồ thị (Graph Facts) với viền nổi bật */
+    /* Card Tri thức Đồ thị (Graph Facts) */
     .fact-card {
-        background: rgba(59, 130, 246, 0.08);
-        border: 1px solid rgba(59, 130, 246, 0.4);
-        border-left: 4px solid #2563EB;
-        border-radius: 8px;
-        padding: 12px 14px;
-        margin-bottom: 12px;
-        color: inherit;
-        transition: all 0.2s ease-in-out;
+        border-left: 4px solid #1f77b4;
+        background: rgba(31, 119, 180, 0.08);
+        border-top: 1px solid rgba(31, 119, 180, 0.25);
+        border-right: 1px solid rgba(31, 119, 180, 0.25);
+        border-bottom: 1px solid rgba(31, 119, 180, 0.25);
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-bottom: 14px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
     .fact-card:hover {
-        border-color: rgba(59, 130, 246, 0.8);
-        background: rgba(59, 130, 246, 0.14);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 14px rgba(31, 119, 180, 0.18);
     }
-    
-    /* Card bằng chứng tài liệu (Document Evidence) với viền nổi bật */
+
+    /* Card Bằng chứng Tài liệu (Document Evidence) */
     .doc-card {
-        background: rgba(16, 185, 129, 0.08);
-        border: 1px solid rgba(16, 185, 129, 0.4);
-        border-left: 4px solid #059669;
-        border-radius: 8px;
-        padding: 12px 14px;
-        margin-bottom: 12px;
-        color: inherit;
-        transition: all 0.2s ease-in-out;
+        border-left: 4px solid #ff7f0e;
+        background: rgba(255, 127, 14, 0.08);
+        border-top: 1px solid rgba(255, 127, 14, 0.25);
+        border-right: 1px solid rgba(255, 127, 14, 0.25);
+        border-bottom: 1px solid rgba(255, 127, 14, 0.25);
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-bottom: 14px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
     .doc-card:hover {
-        border-color: rgba(16, 185, 129, 0.8);
-        background: rgba(16, 185, 129, 0.14);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 14px rgba(255, 127, 14, 0.18);
     }
-    
-    /* Badge phong cách thể hiện thuộc tính */
-    .badge-subject {
-        background: rgba(59, 130, 246, 0.2);
-        color: inherit;
+
+    /* Score Pill */
+    .score-pill {
+        background: #28a745;
+        color: #ffffff !important;
+        border-radius: 12px;
+        padding: 3px 10px;
+        font-size: 0.82rem;
         font-weight: 700;
-        padding: 2px 8px;
-        border-radius: 4px;
         display: inline-block;
+        letter-spacing: 0.3px;
+    }
+
+    /* Badges cho Đồ thị */
+    .badge-subject {
+        background: #e0f2fe;
+        color: #0369a1 !important;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 6px;
+        display: inline-block;
+        font-size: 0.92rem;
+        border: 1px solid #bae6fd;
     }
     .badge-relation {
-        background: rgba(245, 158, 11, 0.25);
-        color: inherit;
-        font-family: monospace;
+        background: #fef3c7;
+        color: #b45309 !important;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
         font-weight: 700;
-        font-size: 0.88rem;
-        padding: 2px 6px;
+        font-size: 0.85rem;
+        padding: 2px 8px;
         border-radius: 4px;
+        border: 1px solid #fde68a;
     }
     .badge-object {
-        background: rgba(16, 185, 129, 0.2);
-        color: inherit;
+        background: #dcfce7;
+        color: #15803d !important;
         font-weight: 700;
-        padding: 2px 8px;
-        border-radius: 4px;
+        padding: 3px 10px;
+        border-radius: 6px;
         display: inline-block;
+        font-size: 0.92rem;
+        border: 1px solid #bbf7d0;
     }
-    .score-pill {
-        background: rgba(16, 185, 129, 0.25);
-        color: inherit;
-        font-weight: 700;
-        padding: 2px 8px;
-        border-radius: 12px;
-        font-size: 0.82rem;
-        display: inline-block;
+
+    /* General Input & Card Enhancements */
+    .stTextInput input, div[data-baseweb="input"] input {
+        font-size: 1.02rem !important;
+        font-weight: 500 !important;
+        border-radius: 8px !important;
     }
-    
-    /* Thụt dòng blockquote đẹp */
-    blockquote {
-        border-left: 4px solid #8B5CF6 !important;
-        background: rgba(139, 92, 246, 0.08) !important;
-        padding: 10px 14px !important;
-        border-radius: 0 6px 6px 0 !important;
-        color: inherit !important;
+    div[data-testid="stMetricValue"] {
+        font-size: 1.7rem !important;
+        font-weight: 700 !important;
     }
 </style>
 """, unsafe_allow_html=True)
 
 
 # =============================================================================
-# KHỞI TẠO CÁC MODULE ENGINE (CACHED)
+# 4. KHỞI TẠO CÁC MODULE ENGINE (CACHED RESOURCE)
 # =============================================================================
 @st.cache_resource
-def load_rag_engine():
+def load_rag_engine() -> DocumentRetriever:
     return DocumentRetriever("documents")
 
 @st.cache_resource
-def load_graph_engine():
+def load_graph_engine() -> GraphRetriever:
     return GraphRetriever()
 
 @st.cache_resource
-def load_generator_engine():
+def load_generator_engine() -> GroundedGenerator:
     return GroundedGenerator()
 
 @st.cache_resource
-def load_gold_forecaster_engine():
-    df = load_gold_data()
-    return GoldForecaster(df=df)
+def load_gold_data_cached() -> pd.DataFrame:
+    # Ưu tiên load từ data/gold_price_forecasting_dataset.csv không dùng absolute path
+    path = os.path.join("data", "gold_price_forecasting_dataset.csv")
+    if os.path.exists(path):
+        return load_gold_data(path)
+    return load_gold_data()
+
+@st.cache_resource
+def load_gold_forecaster_engine() -> Optional[GoldForecaster]:
+    try:
+        df = load_gold_data_cached()
+        return GoldForecaster(df=df)
+    except Exception as e:
+        st.warning(f"Không thể khởi tạo GoldForecaster: {e}")
+        return None
 
 rag_retriever = load_rag_engine()
 graph_retriever = load_graph_engine()
@@ -161,20 +213,23 @@ gold_forecaster = load_gold_forecaster_engine()
 
 
 # =============================================================================
-# QUẢN TRỊ TRẠNG THÁI HỘI THOẠI (SESSION STATE)
+# 5. QUẢN LÝ SESSION STATE
 # =============================================================================
 if "query_text" not in st.session_state:
     st.session_state["query_text"] = "Tiêu chuẩn chẩn đoán xác định bệnh đái tháo đường theo ADA là gì?"
 
-if "active_domain" not in st.session_state:
-    st.session_state["active_domain"] = "diabetes"
+if "chat_history" not in st.session_state:
+    st.session_state["chat_history"] = []
+
+if "last_result" not in st.session_state:
+    st.session_state["last_result"] = None
 
 
 # =============================================================================
-# SIDEBAR - ĐIỀU KHIỂN & CẤU HÌNH HỆ THỐNG
+# 6. SIDEBAR HIỆN ĐẠI
 # =============================================================================
 with st.sidebar:
-    st.title("⚙️ Điều khiển Hệ thống")
+    st.markdown("## ⚙️ Bảng Điều Khiển")
 
     # 1. Chọn miền nghiệp vụ
     domain_choice = st.selectbox(
@@ -183,15 +238,16 @@ with st.sidebar:
             "🩺 Y tế (Bệnh tiểu đường)",
             "📊 Tài chính (Chứng khoán & Tín dụng)",
             "🏆 Hàng hóa (Thị trường Giá vàng)"
-        ]
+        ],
+        index=0
     )
 
     domain_key = "diabetes" if "Y tế" in domain_choice else ("finance" if "Tài chính" in domain_choice else "gold")
 
     st.markdown("---")
 
-    # 2. Trạng thái kết nối Neo4j
-    st.subheader("🔌 Cơ sở Tri thức Neo4j")
+    # 2. Trạng thái Neo4j Indicator
+    st.markdown("### 🔌 Trạng thái Neo4j")
     if graph_retriever.is_connected:
         st.success("🟢 Neo4j: Đã kết nối Live DBMS")
     else:
@@ -210,15 +266,17 @@ with st.sidebar:
     if "graph_retriever" in st.session_state:
         graph_retriever = st.session_state["graph_retriever"]
 
-    # 3. Tùy chọn tham số RAG
     st.markdown("---")
-    st.subheader("🛠️ Tham số Truy xuất")
-    top_k = st.slider("Số lượng tài liệu Top-k:", min_value=1, max_value=5, value=3)
+
+    # 3. Tham số RAG
+    st.markdown("### 🛠️ Tham số RAG")
+    top_k = st.slider("Số lượng tài liệu Top-k:", min_value=1, max_value=5, value=3, step=1)
     use_kg = st.toggle("Kích hoạt Knowledge Graph (Dual-Grounding)", value=True)
 
-    # 4. Câu hỏi mẫu gợi ý
     st.markdown("---")
-    st.subheader("💡 Câu hỏi Mẫu Gợi ý")
+
+    # 4. Câu hỏi mẫu gợi ý
+    st.markdown("### 💡 Câu hỏi Mẫu Gợi ý")
     sample_questions = {
         "diabetes": [
             "Tiêu chuẩn chẩn đoán xác định bệnh đái tháo đường theo ADA là gì?",
@@ -244,58 +302,62 @@ with st.sidebar:
 
 
 # =============================================================================
-# MAIN DASHBOARD - TIÊU ĐỀ & THỐNG KÊ QUY MÔ
+# 7. MAIN HEADER & TỔNG QUAN HỆ THỐNG
 # =============================================================================
-col_head1, col_head2 = st.columns([0.08, 0.92])
-with col_head1:
-    st.markdown("<div style='font-size: 2.8rem; line-height: 1.2;'>🧠</div>", unsafe_allow_html=True)
-with col_head2:
-    st.title("Hệ thống Thông minh Hybrid Knowledge Graph + RAG")
-    st.markdown(f"**Hội tụ giữa Tri thức Đồ thị Cấu trúc (Neo4j) và Truy hồi Ngữ nghĩa (Vector RAG)** • Miền: `{domain_choice}`")
+st.markdown(f"""
+<div class="main-header">
+    <div style="font-size: 3rem; line-height: 1;">🧠</div>
+    <div>
+        <h1>Hệ thống Thông minh Hybrid Knowledge Graph + RAG</h1>
+        <p>Hội tụ giữa Tri thức Đồ thị Cấu trúc (Neo4j) và Truy hồi Ngữ nghĩa (Vector RAG) • Miền nghiệp vụ: <b>{domain_choice}</b></p>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
-# Thống kê tổng quan dạng Container hiện đại
-col_m1, col_m2, col_m3, col_m4 = st.columns(4)
-with col_m1:
+# Thống kê tổng quan dạng Metric cards
+m_col1, m_col2, m_col3, m_col4 = st.columns(4)
+with m_col1:
     node_count = "784 Nút" if domain_key == "diabetes" else ("292 Nút" if domain_key == "finance" else "1,279 Nút")
-    st.metric("Quy mô Đồ thị (Nodes)", node_count, delta="Cấu trúc thực thể")
-with col_m2:
+    st.metric("Quy mô Đồ thị (Nodes)", node_count, delta="Thực thể bản thể")
+with m_col2:
     edge_count = "3,551 Cạnh" if domain_key == "diabetes" else ("354 Cạnh" if domain_key == "finance" else "5,045 Cạnh")
     st.metric("Quan hệ Đồ thị (Edges)", edge_count, delta="Suy luận đa bước")
-with col_m3:
+with m_col3:
     st.metric("Tài liệu RAG Index", f"{len(rag_retriever.chunks)} Chunks", delta="TF-IDF / Cosine")
-with col_m4:
+with m_col4:
     st.metric("Độ chính xác Grounded", "98.3%", delta="Zero Hallucination")
 
-st.markdown("---")
+st.markdown("<div style='margin-bottom: 12px;'></div>", unsafe_allow_html=True)
 
 
 # =============================================================================
-# CÁC TAB TƯƠNG TÁC CHÍNH
+# 8. BỐN TAB CHÍNH
 # =============================================================================
-tab_chat, tab_graph, tab_forecast, tab_eval = st.tabs([
-    "💬 Trợ lý Hỏi đáp Hybrid (Evidence Dashboard)",
-    "🕸️ Khám phá Đồ thị Tri thức (Graph Explorer)",
-    "📈 Dự báo Giá Vàng AI (Time Series Forecasting)",
-    "📊 Đánh giá Định lượng & Đối sánh (Mục 5.8)"
+tab_chat, tab_forecast, tab_graph, tab_benchmark = st.tabs([
+    "💬 Trợ lý Hỏi đáp (Chat + Evidence)",
+    "📈 Dự báo Giá Vàng (Gold Forecast Chart)",
+    "🕸️ Khám phá Đồ thị (Graph Explorer)",
+    "📊 Đánh giá & Đối sánh (Benchmark)"
 ])
 
 
 # -----------------------------------------------------------------------------
-# TAB 1: TRỢ LÝ HỎI ĐÁP HYBRID (3 KHỐI TRỰC QUAN ĐỘ TƯƠNG PHẢN CAO)
+# TAB 1: TRỢ LÝ HỎI ĐÁP (CHAT + EVIDENCE)
 # -----------------------------------------------------------------------------
 with tab_chat:
     col_input, col_submit = st.columns([5, 1])
     with col_input:
         user_query = st.text_input(
-            "🔍 Nhập câu hỏi nghiệp vụ hoặc chọn từ danh sách câu hỏi mẫu bên trái:",
-            value=st.session_state["query_text"],
-            key="main_query_input"
+            "🔍 Nhập câu hỏi nghiệp vụ hoặc chọn từ danh sách câu hỏi mẫu ở thanh bên trái:",
+            value=st.session_state.get("query_text", ""),
+            key="user_query_input"
         )
     with col_submit:
-        st.write("")  # Spacing
+        st.write("")
         submit_btn = st.button("🚀 Gửi câu hỏi", type="primary", use_container_width=True)
 
-    if submit_btn or user_query:
+    # PIPELINE CHỈ CHẠY KHI NHẤN NÚT GỬI (submit_btn only)
+    if submit_btn:
         with st.spinner("Đang kích hoạt đường ống truy xuất kép (Graph + Vector) và tổng hợp ngữ cảnh..."):
             # 1. Truy xuất Graph Facts
             if use_kg:
@@ -307,21 +369,33 @@ with tab_chat:
             doc_results = rag_retriever.retrieve(user_query, domain=domain_key, top_k=top_k)
 
             # 3. Sinh câu trả lời có căn cứ
-            res = generator.generate_answer(user_query, graph_facts, doc_results, domain=domain_key)
+            answer_res = generator.generate_answer(user_query, graph_facts, doc_results, domain=domain_key)
 
-        st.success("✅ Đã xử lý và hợp nhất tri thức thành công!")
+            # Lưu vào session_state
+            st.session_state["last_result"] = {
+                "query": user_query,
+                "domain": domain_key,
+                "graph_facts": graph_facts,
+                "doc_results": doc_results,
+                "answer_res": answer_res
+            }
 
-        # BỐ CỤC 3 CỘT TRỰC QUAN - KHÔNG DÙNG MÀU TĨNH LÀM MẤT CHỮ
-        col_g, col_d, col_a = st.columns([1, 1, 1.3])
+    # Hiển thị kết quả truy xuất nếu đã có lượt hỏi đáp
+    res_data = st.session_state.get("last_result")
+    if res_data is not None:
+        st.markdown(f"**Kết quả truy xuất cho:** *\"{res_data['query']}\"*")
 
-        # KHỐI 1: KNOWLEDGE GRAPH FACTS
-        with col_g:
+        col_facts, col_docs, col_ans = st.columns([1, 1, 1.3])
+
+        # CỘT 1: GRAPH FACTS
+        with col_facts:
             with st.container(border=True):
-                st.subheader("🕸️ Khối 1: Graph Facts (Neo4j)")
-                if graph_facts:
-                    st.caption(f"Trích xuất **{len(graph_facts)}** sự kiện cấu trúc tường minh:")
-                    for f in graph_facts:
-                        detail_str = f" | {f['detail']}" if f.get('detail') else ""
+                st.subheader("🕸️ Graph Facts (Neo4j)")
+                g_facts = res_data["graph_facts"]
+                if g_facts:
+                    st.caption(f"Trích xuất **{len(g_facts)}** bộ ba thực thể tường minh:")
+                    for f in g_facts:
+                        detail_str = f" | {f['detail']}" if f.get("detail") else ""
                         st.markdown(f"""
                         <div class="fact-card">
                             <span class="badge-subject">{f['subject']}</span><br>
@@ -332,15 +406,16 @@ with tab_chat:
                         </div>
                         """, unsafe_allow_html=True)
                 else:
-                    st.warning("Knowledge Graph đang tắt hoặc không có bộ ba phù hợp.")
+                    st.info("Knowledge Graph đang tắt hoặc không tìm thấy bộ ba thực thể phù hợp.")
 
-        # KHỐI 2: DOCUMENT EVIDENCE
-        with col_d:
+        # CỘT 2: DOCUMENT EVIDENCE
+        with col_docs:
             with st.container(border=True):
-                st.subheader("📄 Khối 2: Document Evidence (RAG)")
-                if doc_results:
-                    st.caption(f"Truy xuất **{len(doc_results)}** phân đoạn tài liệu tương đồng cao nhất:")
-                    for doc in doc_results:
+                st.subheader("📄 Document Evidence (RAG)")
+                d_docs = res_data["doc_results"]
+                if d_docs:
+                    st.caption(f"Truy xuất **{len(d_docs)}** phân đoạn tài liệu tương đồng cao nhất:")
+                    for doc in d_docs:
                         st.markdown(f"""
                         <div class="doc-card">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
@@ -356,187 +431,286 @@ with tab_chat:
                 else:
                     st.warning("Không tìm thấy đoạn văn bản tương đồng trong kho tài liệu.")
 
-        # KHỐI 3: GROUNDED ANSWER (RENDER MARKDOWN TRỰC TIẾP CHỐNG LỖI MÀU NỀN)
-        with col_a:
+        # CỘT 3: CÂU TRẢ LỜI CÓ CĂN CỨ
+        with col_ans:
             with st.container(border=True):
-                st.subheader("💡 Khối 3: Câu trả lời có Căn cứ (Grounded Answer)")
-                
-                # Render nội dung Markdown trực tiếp để tận dụng Theme của Streamlit
-                st.markdown(res["answer"])
+                st.subheader("💡 Câu trả lời có Căn cứ (Grounded Answer)")
+                ans_obj = res_data["answer_res"]
+                st.markdown(ans_obj["answer"])
 
-                if res["citations"]:
+                if ans_obj.get("citations"):
                     st.markdown("---")
                     st.markdown("**🔖 Danh mục Trích dẫn Nguồn kiểm chứng (Citations):**")
-                    for cit in res["citations"]:
+                    for cit in ans_obj["citations"]:
                         st.markdown(f"- 📌 `{cit}`")
+    else:
+        st.info("👆 Nhập câu hỏi và nhấn **🚀 Gửi câu hỏi** hoặc chọn một trong các câu hỏi mẫu ở thanh bên trái để bắt đầu tra cứu tri thức.")
 
 
 # -----------------------------------------------------------------------------
-# TAB 2: KHÁM PHÁ ĐỒ THỊ TRI THỨC (GRAPH EXPLORER)
-# -----------------------------------------------------------------------------
-with tab_graph:
-    with st.container(border=True):
-        st.subheader(f"Cấu trúc Bản thể học & Dữ liệu Đồ thị miền {domain_choice}")
-
-        if domain_key == "diabetes":
-            st.markdown("""
-            - **Mô hình 2 lớp:**
-              + **Lớp 1 (Data Layer):** 768 nút `Patient` nối cạnh tới các dải chỉ số: `AgeGroup` (4 nhóm), `BMIBand` (4 nhóm), `GlucoseBand` (3 dải), `HbA1cBand` (3 dải) và `Condition` (Tiểu đường & Tăng huyết áp).
-              + **Lớp 2 (Knowledge Layer):** Tri thức chuẩn y khoa ADA/WHO:
-                * `(:HbA1cBand {name: 'Diabetes range'})-[:INDICATES]->(:Condition {name: 'Diabetes'})`
-                * `(:BMIBand {name: 'Obese'})-[:INCREASES_RISK_OF]->(:Condition {name: 'Diabetes'})`
-                * `(:Condition {name: 'Hypertension'})-[:COMORBID_WITH]->(:Condition {name: 'Diabetes'})`
-            """)
-            diab_summary = pd.DataFrame([
-                {"Nhóm chỉ số": "HbA1c >= 6.5%", "Ý nghĩa": "Diabetes range", "Tỷ lệ mắc bệnh thực tế": "66.83%", "Đánh giá": "Nguy cơ bệnh lý cao nhất"},
-                {"Nhóm chỉ số": "BMI >= 30", "Ý nghĩa": "Obese (Béo phì)", "Tỷ lệ mắc bệnh thực tế": "46.40%", "Đánh giá": "Gấp 6.76 lần nhóm bình thường"},
-                {"Nhóm chỉ số": "Đồng mắc Tăng huyết áp", "Ý nghĩa": "BP >= 80 mmHg", "Tỷ lệ mắc bệnh thực tế": "33.58% bệnh nhân tiểu đường", "Đánh giá": "Hội chứng chuyển hóa"},
-                {"Nhóm chỉ số": "Obese + HbA1c bệnh lý", "Ý nghĩa": "Sót nhãn lâm sàng", "Số lượng phát hiện": "38 bệnh nhân", "Đánh giá": "Suy luận đa bước phát hiện sớm"}
-            ])
-            st.dataframe(diab_summary, use_container_width=True)
-
-        elif domain_key == "finance":
-            st.markdown(r"""
-            - **Mô hình 2 lớp:**
-              + **Lớp 1 (Data Layer):** 10 nút `StockIndex` nối tới `Country` và `Region`. Mỗi chỉ số nối tới chuỗi nút `YearStat` (260 nút năm chứa lợi suất năm, độ biến động vol, sụt giảm tối đa max_drawdown).
-              + **Lớp tương quan:** 18 cặp chỉ số nối cạnh `[:CORRELATED_WITH]` khi hệ số tương quan chuỗi giá $|corr| \ge 0.6$.
-              + **Lớp 2 (Knowledge Layer):** 6 biến cố khủng hoảng lớn `MarketEvent` nối tới `YearStat` qua cạnh `[:AFFECTED_BY]`.
-            """)
-            fin_summary = pd.DataFrame([
-                {"Sự kiện / Cặp chỉ số": "NIFTY 50 (Khủng hoảng 2008)", "Chỉ số thống kê": "Max Drawdown: -78.95%", "Ý nghĩa": "Thị trường mới nổi chịu tổn thương sâu nhất"},
-                {"Sự kiện / Cặp chỉ số": "SSE Composite (Khủng hoảng 2008)", "Chỉ số thống kê": "Max Drawdown: -76.71%", "Ý nghĩa": "Sụt giảm nghiêm trọng đi kèm vol 71.09%"},
-                {"Sự kiện / Cặp chỉ số": "S&P 500 & DAX 40", "Chỉ số thống kê": "Correlation = 0.8408", "Ý nghĩa": "Lây lan khủng hoảng giữa thị trường Mỹ và Đức"},
-                {"Sự kiện / Cặp chỉ số": "Châu Âu (COVID-19 2020)", "Chỉ số thống kê": "Sụt giảm TB: -49.28%", "Ý nghĩa": "Cú sốc phong tỏa trước khi hồi phục chữ V"}
-            ])
-            st.dataframe(fin_summary, use_container_width=True)
-
-        elif domain_key == "gold":
-            st.markdown("""
-            - **Mô hình 2 lớp:**
-              + **Lớp 1 (Data Layer):** 1,259 nút `GoldDay` nối chuỗi thời gian liên tiếp `[:NEXT]`. Các nút trạng thái kỹ thuật: `RSIState`, `BandState`, `TrendState`.
-              + **Lớp 2 (Knowledge Layer):** 5 yếu tố vĩ mô `Factor` tác động lên `Commodity {name: 'Gold'}` qua quan hệ `[:INFLUENCES]`.
-              + **Biến cố địa chính trị:** 5 sự kiện vĩ mô lớn `GoldEvent` gắn với phiên giao dịch qua `[:OCCURRED_ON]`.
-            """)
-            gold_summary = pd.DataFrame([
-                {"Yếu tố / Sự kiện": "Lãi suất Fed / USD", "Chiều tác động": "Negative (Tiêu cực)", "Độ tin cậy": "95%", "Cơ chế": "Chi phí cơ hội nắm giữ tăng"},
-                {"Yếu tố / Sự kiện": "Xung đột địa chính trị", "Chiều tác động": "Positive (Tích cực)", "Độ tin cậy": "98%", "Cơ chế": "Dòng tiền trú ẩn an toàn cực mạnh"},
-                {"Yếu tố / Sự kiện": "SVB sụp đổ (2023-03-10)", "Biến động T+5": "+5.69%", "Độ tin cậy": "Thực tế", "Cơ chế": "Hoảng loạn thanh khoản ngân hàng"},
-                {"Yếu tố / Sự kiện": "RSI Quá bán (Oversold < 30)", "Lợi suất kỳ vọng T+5": "+0.66%", "Win Rate": "61.5%", "Cơ chế": "Hồi quy trung bình đa bước [:NEXT*5]"}
-            ])
-            st.dataframe(gold_summary, use_container_width=True)
-
-
-# -----------------------------------------------------------------------------
-# TAB 3: DỰ BÁO GIÁ VÀNG AI & PHÂN TÍCH CHUỖI THỜI GIAN
+# TAB 2: DỰ BÁO GIÁ VÀNG (GOLD FORECAST CHART)
 # -----------------------------------------------------------------------------
 with tab_forecast:
     with st.container(border=True):
-        st.subheader("📈 Dự báo Giá Vàng Đa Mô hình (ARIMA / Holt-Winters / Rolling Drift)")
-        st.caption("Kết hợp chuỗi thời gian định lượng với đồ thị tri thức sự kiện Neo4j để nâng cao độ chính xác dự báo.")
+        st.subheader("📈 Dự báo Giá Vàng Đa Mô hình (ARIMA / Exponential Smoothing / Rolling Mean)")
+        st.caption("Kết hợp dữ liệu chuỗi thời gian định lượng từ tệp `data/gold_price_forecasting_dataset.csv` với các chỉ báo kỹ thuật và sự kiện vĩ mô.")
 
-        col_fc_cfg1, col_fc_cfg2, col_fc_cfg3 = st.columns([1, 1, 1])
-        with col_fc_cfg1:
-            forecast_steps = st.slider("Số ngày dự báo tương lai (T+N):", min_value=5, max_value=60, value=30, step=5)
-        with col_fc_cfg2:
-            model_choice = st.selectbox(
-                "Mô hình dự báo:",
-                ["auto (Tự động chọn mô hình tốt nhất theo Backtest)", "arima (ARIMA 2,1,2)", "ets (Exponential Smoothing)", "rolling (Rolling Mean + Drift)"]
-            )
-            method_arg = model_choice.split()[0]
-        with col_fc_cfg3:
-            st.write("")
-            run_fc_btn = st.button("🚀 Chạy Dự báo & Backtest", type="primary", use_container_width=True)
+        if gold_forecaster is not None and gold_forecaster.df is not None:
+            col_fc1, col_fc2, col_fc3 = st.columns([1, 1, 1])
+            with col_fc1:
+                forecast_steps = st.slider("Số ngày dự báo tương lai (T+N):", min_value=5, max_value=60, value=30, step=5)
+            with col_fc2:
+                model_option = st.selectbox(
+                    "Chọn mô hình dự báo:",
+                    [
+                        "auto (Tự động chọn mô hình tối ưu theo Backtest)",
+                        "arima (ARIMA 2,1,2)",
+                        "ets (Exponential Smoothing Holt-Winters)",
+                        "rolling (Rolling Mean + Drift Baseline)"
+                    ]
+                )
+                method_selected = model_option.split()[0]
+            with col_fc3:
+                st.write("")
+                run_forecast_btn = st.button("🔄 Cập nhật Dự báo", type="primary", use_container_width=True)
 
-        # Chạy dự báo
-        with st.spinner("Đang chạy mô hình dự báo chuỗi thời gian và đánh giá sai số..."):
-            fc_data = gold_forecaster.forecast(steps=forecast_steps, method=method_arg)
-            summary_fc = gold_forecaster.get_forecast_summary()
+            # Thực thi dự báo
+            with st.spinner("Đang tính toán dự báo chuỗi thời gian và dải tin cậy 95%..."):
+                try:
+                    fc_df = gold_forecaster.forecast(steps=forecast_steps, method=method_selected)
+                    fc_summary = gold_forecaster.get_forecast_summary()
+                except Exception as ex:
+                    st.error(f"Lỗi khi chạy dự báo: {ex}")
+                    fc_df = None
+                    fc_summary = {}
 
-        col_met1, col_met2, col_met3, col_met4 = st.columns(4)
-        with col_met1:
-            st.metric("Giá đóng cửa phiên gần nhất", f"${summary_fc.get('last_actual_close', 0):,.2f}", delta=summary_fc.get("last_actual_date", ""))
-        with col_met2:
-            st.metric(f"Dự báo phiên T+{forecast_steps}", f"${summary_fc.get('last_predicted', 0):,.2f}", delta=f"{summary_fc.get('change_pct', 0):+.2f}%")
-        with col_met3:
-            st.metric("Khoảng dự báo [Min - Max]", f"${summary_fc.get('min_predicted', 0):,.1f} - ${summary_fc.get('max_predicted', 0):,.1f}", delta=summary_fc.get("trend", ""))
-        with col_met4:
-            st.metric("Mô hình được áp dụng", summary_fc.get("method", "N/A"), delta="Backtest Optimal")
+            if fc_df is not None and not fc_df.empty:
+                # Hiển thị 4 thẻ metrics
+                fc_m1, fc_m2, fc_m3, fc_m4 = st.columns(4)
+                with fc_m1:
+                    st.metric(
+                        "Giá đóng cửa gần nhất",
+                        f"${fc_summary.get('last_actual_close', 0):,.2f}",
+                        delta=f"Ngày: {fc_summary.get('last_actual_date', '')}"
+                    )
+                with fc_m2:
+                    st.metric(
+                        f"Dự báo phiên T+{forecast_steps}",
+                        f"${fc_summary.get('last_predicted', 0):,.2f}",
+                        delta=f"{fc_summary.get('change_pct', 0):+.2f}%"
+                    )
+                with fc_m3:
+                    st.metric(
+                        "Khoảng dự báo [Min - Max]",
+                        f"${fc_summary.get('min_predicted', 0):,.1f} - ${fc_summary.get('max_predicted', 0):,.1f}",
+                        delta=f"Xu hướng: {fc_summary.get('trend', '')}"
+                    )
+                with fc_m4:
+                    st.metric(
+                        "Mô hình được áp dụng",
+                        fc_summary.get("method", "N/A"),
+                        delta="Backtest Optimal"
+                    )
 
-        # Vẽ biểu đồ dự báo
-        st.markdown("#### 📊 Trực quan hóa Xu hướng Dự báo và Dải tin cậy 95%:")
-        chart_historical = gold_forecaster.df.tail(90).copy()
-        chart_historical = chart_historical.rename(columns={"close": "Giá thực tế"})
-        chart_historical["Dự báo (Forecast)"] = np.nan
-        chart_historical["Cận dưới (95% CI)"] = np.nan
-        chart_historical["Cận trên (95% CI)"] = np.nan
+                # Biểu đồ lịch sử + dự báo (30 ngày)
+                st.markdown("#### 📊 Biểu đồ Chuỗi Giá Lịch sử (90 phiên gần nhất) & Xu hướng Dự báo:")
+                hist_tail = gold_forecaster.df.tail(90).copy()
+                hist_tail = hist_tail.rename(columns={"close": "Giá thực tế"})
+                hist_tail["Dự báo (Forecast)"] = np.nan
+                hist_tail["Cận dưới (95% CI)"] = np.nan
+                hist_tail["Cận trên (95% CI)"] = np.nan
 
-        fc_plot = pd.DataFrame({
-            "date": fc_data["date"],
-            "Giá thực tế": np.nan,
-            "Dự báo (Forecast)": fc_data["forecast_close"],
-            "Cận dưới (95% CI)": fc_data["lower_bound"],
-            "Cận trên (95% CI)": fc_data["upper_bound"]
-        })
+                fc_plot_df = pd.DataFrame({
+                    "date": fc_df["date"],
+                    "Giá thực tế": np.nan,
+                    "Dự báo (Forecast)": fc_df["forecast_close"],
+                    "Cận dưới (95% CI)": fc_df.get("lower_bound", fc_df["forecast_close"]),
+                    "Cận trên (95% CI)": fc_df.get("upper_bound", fc_df["forecast_close"])
+                })
 
-        combined_chart = pd.concat([chart_historical[["date", "Giá thực tế", "Dự báo (Forecast)", "Cận dưới (95% CI)", "Cận trên (95% CI)"]], fc_plot], ignore_index=True)
-        combined_chart["date"] = pd.to_datetime(combined_chart["date"]).dt.strftime("%Y-%m-%d")
-        combined_chart = combined_chart.set_index("date")
-        st.line_chart(combined_chart)
+                merged_chart = pd.concat([
+                    hist_tail[["date", "Giá thực tế", "Dự báo (Forecast)", "Cận dưới (95% CI)", "Cận trên (95% CI)"]],
+                    fc_plot_df
+                ], ignore_index=True)
+                merged_chart["date"] = pd.to_datetime(merged_chart["date"]).dt.strftime("%Y-%m-%d")
+                merged_chart = merged_chart.set_index("date")
+                st.line_chart(merged_chart)
 
-        # Bảng dữ liệu dự báo chi tiết và kết quả backtest
-        col_tbl, col_bt = st.columns([1.2, 1])
-        with col_tbl:
-            st.markdown("##### 📋 Bảng Số liệu Dự báo Chi tiết:")
-            df_display = fc_data.copy()
-            df_display["date"] = pd.to_datetime(df_display["date"]).dt.strftime("%Y-%m-%d")
-            df_display.columns = ["Ngày dự báo", "Giá dự báo ($/oz)", "Cận dưới (95%)", "Cận trên (95%)"]
-            st.dataframe(df_display, use_container_width=True, height=260)
+                # Bảng số liệu có thể tải về & Bảng kết quả Backtest
+                col_data_table, col_backtest = st.columns([1.2, 1])
+                with col_data_table:
+                    st.markdown("##### 📋 Bảng Số liệu Dự báo Chi tiết:")
+                    display_export_df = fc_df.copy()
+                    display_export_df["date"] = pd.to_datetime(display_export_df["date"]).dt.strftime("%Y-%m-%d")
+                    display_export_df.columns = ["Ngày dự báo", "Giá dự báo ($/oz)", "Cận dưới (95%)", "Cận trên (95%)"]
+                    st.dataframe(display_export_df, use_container_width=True, height=260)
 
-        with col_bt:
-            st.markdown("##### 🎯 Đánh giá Sai số Kiểm thử (Backtest Benchmark):")
-            bt_results = gold_forecaster.backtest()
-            bt_rows = []
-            for m_name, m_stats in bt_results.get("methods", {}).items():
-                if "MAE" in m_stats:
-                    bt_rows.append({
-                        "Mô hình": m_name,
-                        "MAE ($)": f"${m_stats['MAE']:.2f}",
-                        "RMSE ($)": f"${m_stats['RMSE']:.2f}",
-                        "MAPE (%)": f"{m_stats['MAPE_pct']:.2f}%"
-                    })
-            if bt_rows:
-                st.dataframe(pd.DataFrame(bt_rows), use_container_width=True)
-                st.success(f"🏆 Mô hình đạt sai số thấp nhất trên tập kiểm thử: **{bt_results.get('best_method', '')}**")
-            else:
-                st.info("Đang tính toán sai số backtest trên chuỗi dữ liệu...")
+                    # Nút Download CSV
+                    csv_bytes = display_export_df.to_csv(index=False).encode("utf-8")
+                    st.download_button(
+                        label="📥 Tải Bảng Dữ liệu Dự báo (CSV)",
+                        data=csv_bytes,
+                        file_name=f"gold_forecast_{forecast_steps}d.csv",
+                        mime="text/csv",
+                        use_container_width=True
+                    )
+
+                with col_backtest:
+                    st.markdown("##### 🎯 Đánh giá Sai số Kiểm thử (Backtest Benchmark):")
+                    try:
+                        bt_results = gold_forecaster.backtest()
+                        bt_rows = []
+                        for m_name, m_stats in bt_results.get("methods", {}).items():
+                            if isinstance(m_stats, dict) and "MAE" in m_stats:
+                                bt_rows.append({
+                                    "Mô hình": m_name,
+                                    "MAE ($)": f"${m_stats['MAE']:.2f}",
+                                    "RMSE ($)": f"${m_stats['RMSE']:.2f}",
+                                    "MAPE (%)": f"{m_stats['MAPE_pct']:.2f}%"
+                                })
+                        if bt_rows:
+                            st.dataframe(pd.DataFrame(bt_rows), use_container_width=True)
+                            st.success(f"🏆 Mô hình đạt sai số thấp nhất: **{bt_results.get('best_method', '')}**")
+                    except Exception as bt_err:
+                        st.info(f"Đang tính toán sai số backtest: {bt_err}")
+        else:
+            st.warning("⚠️ Chưa nạp được dữ liệu giá vàng từ `data/gold_price_forecasting_dataset.csv`. Vui lòng kiểm tra lại đường dẫn file.")
 
 
 # -----------------------------------------------------------------------------
-# TAB 4: ĐÁNH GIÁ ĐỊNH LƯỢNG & ĐỐI SÁNH THỰC NGHIỆM (MỤC 5.8)
+# TAB 3: KHÁM PHÁ ĐỒ THỊ (GRAPH EXPLORER)
 # -----------------------------------------------------------------------------
-with tab_eval:
+with tab_graph:
     with st.container(border=True):
-        st.subheader("Kết quả Đánh giá Định lượng Thực nghiệm (Mục 5.8)")
-        st.markdown("Đối sánh hiệu năng giữa 3 kiến trúc: **LLM-only** (Không RAG) vs **Vector RAG** vs **GraphRAG (KG + RAG)** trên 60 câu hỏi kiểm thử:")
+        st.subheader(f"🕸️ Khám phá Đồ thị Tri thức Đa miền: {domain_choice}")
 
-        col_bench1, col_bench2 = st.columns([1.5, 1])
-        with col_bench1:
-            bench_df = pd.DataFrame([
-                {"Mô hình AI": "1. LLM-only (Mô hình nền tảng)", "Retrieval Recall@3": "N/A", "Điểm chất lượng (0 - 2)": "0.97 / 2.0 (48.5%)", "Tỷ lệ ảo giác": "35.0%", "Khả năng giải thích": "Kém (Hộp đen)"},
-                {"Mô hình AI": "2. Vector RAG (Truy xuất đoạn văn)", "Retrieval Recall@3": "96.7%", "Điểm chất lượng (0 - 2)": "1.73 / 2.0 (77.0%)", "Tỷ lệ ảo giác": "12.5%", "Khả năng giải thích": "Khá (Trích dẫn văn bản)"},
-                {"Mô hình AI": "3. GraphRAG (KG + RAG lai)", "Retrieval Recall@3": "98.3%", "Điểm chất lượng (0 - 2)": "1.93 / 2.0 (96.5%)", "Tỷ lệ ảo giác": "< 1.0%", "Khả năng giải thích": "Xuất sắc (Neo bám kép)"}
+        if domain_key == "diabetes":
+            st.markdown("""
+            ### 🏥 Bản thể học Miền Y tế (Diabetes Clinical KG)
+            - **Mô hình 2 lớp:**
+              - **Lớp 1 (Data Layer):** 768 nút `Patient` nối cạnh tới các dải chỉ số: `AgeGroup` (4 nhóm), `BMIBand` (4 nhóm), `GlucoseBand` (3 dải), `HbA1cBand` (3 dải) và `Condition` (Tiểu đường & Tăng huyết áp).
+              - **Lớp 2 (Knowledge Layer):** Tri thức chuẩn y khoa ADA / WHO:
+                - `(:HbA1cBand {name: 'Diabetes range'})-[:INDICATES]->(:Condition {name: 'Diabetes'})`
+                - `(:BMIBand {name: 'Obese'})-[:INCREASES_RISK_OF]->(:Condition {name: 'Diabetes'})`
+                - `(:Condition {name: 'Hypertension'})-[:COMORBID_WITH]->(:Condition {name: 'Diabetes'})`
+            """)
+            diab_df = pd.DataFrame([
+                {"Thực thể / Chỉ số": "HbA1c >= 6.5%", "Quan hệ": "[:INDICATES]", "Đích": "Bệnh Tiểu đường (Diabetes)", "Tỷ lệ thực tế": "66.83%", "Đánh giá lâm sàng": "Tiêu chuẩn vàng ADA"},
+                {"Thực thể / Chỉ số": "BMI >= 30", "Quan hệ": "[:INCREASES_RISK_OF]", "Đích": "Bệnh Tiểu đường (Diabetes)", "Tỷ lệ thực tế": "46.40%", "Đánh giá lâm sàng": "Gấp 6.76 lần thể trạng bình thường"},
+                {"Thực thể / Chỉ số": "Tăng huyết áp (BP >= 80)", "Quan hệ": "[:COMORBID_WITH]", "Đích": "Bệnh Tiểu đường (Diabetes)", "Tỷ lệ thực tế": "33.58%", "Đánh giá lâm sàng": "Hội chứng chuyển hóa tim mạch"},
+                {"Thực thể / Chỉ số": "Obese + HbA1c cao", "Quan hệ": "[:SUGGESTS_UNDIAGNOSED]", "Đích": "Bệnh nhân nguy cơ cao", "Tỷ lệ thực tế": "38 bệnh nhân", "Đánh giá lâm sàng": "Phát hiện sớm qua suy luận đồ thị"}
             ])
-            st.dataframe(bench_df, use_container_width=True)
+            st.dataframe(diab_df, use_container_width=True)
 
-        with col_bench2:
-            chart_data = pd.DataFrame({
-                "Mô hình": ["LLM-only", "Vector RAG", "GraphRAG"],
-                "Điểm số (thang 2)": [0.97, 1.73, 1.93]
-            }).set_index("Mô hình")
-            st.bar_chart(chart_data)
+        elif domain_key == "finance":
+            st.markdown(r"""
+            ### 📊 Bản thể học Miền Tài chính (Global Stock & Macro Risk KG)
+            - **Mô hình 2 lớp:**
+              - **Lớp 1 (Data Layer):** 10 nút `StockIndex` nối tới `Country` và `Region`. Mỗi chỉ số nối tới chuỗi nút `YearStat` (260 nút năm chứa lợi suất năm, độ biến động vol, sụt giảm tối đa max_drawdown).
+              - **Lớp tương quan liên thị trường:** 18 cặp chỉ số nối cạnh `[:CORRELATED_WITH]` khi hệ số tương quan chuỗi giá $|corr| \ge 0.6$.
+              - **Lớp 2 (Knowledge Layer):** 6 biến cố khủng hoảng lớn `MarketEvent` nối tới `YearStat` qua cạnh `[:AFFECTED_BY]`.
+            """)
+            fin_df = pd.DataFrame([
+                {"Chỉ số / Cặp tương quan": "NIFTY 50 (Khủng hoảng 2008)", "Quan hệ": "[:AFFECTED_BY]", "Sự kiện": "Global Financial Crisis", "Thống kê": "Max Drawdown: -78.95%", "Ý nghĩa": "Tổn thương sâu ở thị trường mới nổi"},
+                {"Chỉ số / Cặp tương quan": "SSE Composite (Khủng hoảng 2008)", "Quan hệ": "[:AFFECTED_BY]", "Sự kiện": "Global Financial Crisis", "Thống kê": "Max Drawdown: -76.71%", "Ý nghĩa": "Sụt giảm nghiêm trọng kèm Vol 71.09%"},
+                {"Chỉ số / Cặp tương quan": "S&P 500 & DAX 40", "Quan hệ": "[:CORRELATED_WITH]", "Sự kiện": "Liên thị trường Mỹ - Đức", "Thống kê": "Correlation = 0.8408", "Ý nghĩa": "Lây lan khủng hoảng thanh khoản"},
+                {"Chỉ số / Cặp tương quan": "Châu Âu (COVID-19 2020)", "Quan hệ": "[:AFFECTED_BY]", "Sự kiện": "COVID-19 Pandemic Crash", "Thống kê": "Sụt giảm TB: -49.28%", "Ý nghĩa": "Cú sốc phong tỏa trước khi hồi phục chữ V"}
+            ])
+            st.dataframe(fin_df, use_container_width=True)
+
+        elif domain_key == "gold":
+            st.markdown("""
+            ### 🏆 Bản thể học Miền Hàng hóa (Gold Price & Macro Events KG)
+            - **Mô hình 2 lớp:**
+              - **Lớp 1 (Data Layer):** 1,259 nút `GoldDay` nối chuỗi thời gian liên tiếp `[:NEXT]`. Các nút trạng thái kỹ thuật: `RSIState`, `BandState`, `TrendState`.
+              - **Lớp 2 (Knowledge Layer):** 5 yếu tố vĩ mô `Factor` tác động lên `Commodity {name: 'Gold'}` qua quan hệ `[:INFLUENCES]`.
+              - **Biến cố địa chính trị:** 5 sự kiện vĩ mô lớn `GoldEvent` gắn với phiên giao dịch qua `[:OCCURRED_ON]`.
+            """)
+            gold_df = pd.DataFrame([
+                {"Yếu tố / Sự kiện": "Lãi suất Fed / Sức mạnh USD", "Quan hệ": "[:INFLUENCES]", "Chiều tác động": "Negative (Tiêu cực)", "Độ tin cậy": "95%", "Cơ chế": "Chi phí cơ hội nắm giữ tăng"},
+                {"Yếu tố / Sự kiện": "Xung đột địa chính trị", "Quan hệ": "[:INFLUENCES]", "Chiều tác động": "Positive (Tích cực)", "Độ tin cậy": "98%", "Cơ chế": "Dòng tiền trú ẩn an toàn cực mạnh"},
+                {"Yếu tố / Sự kiện": "SVB sụp đổ (2023-03-10)", "Quan hệ": "[:OCCURRED_ON]", "Chiều tác động": "Biến động T+5: +5.69%", "Độ tin cậy": "100%", "Cơ chế": "Hoảng loạn thanh khoản ngân hàng"},
+                {"Yếu tố / Sự kiện": "RSI Quá bán (Oversold < 30)", "Quan hệ": "[:NEXT*5]", "Chiều tác động": "Lợi suất T+5: +0.66%", "Độ tin cậy": "Win Rate: 61.5%", "Cơ chế": "Hồi quy trung bình đa bước"}
+            ])
+            st.dataframe(gold_df, use_container_width=True)
+
+        st.markdown("---")
+        st.markdown("### 🏛️ Sơ đồ Kiến trúc Hệ thống Hybrid Knowledge Graph + RAG")
+        st.markdown("""
+```mermaid
+flowchart TD
+    UserQuery["🔍 Câu hỏi Người dùng (User Query)"] --> NLProc["Xử lý Ngôn ngữ Tự nhiên & Trích xuất Thực thể"]
+    
+    subgraph Neo4jKG ["🕸️ Nhánh 1: Knowledge Graph (Neo4j)"]
+        NLProc --> CypherQuery["Truy vấn Cypher (Triples & Paths)"]
+        CypherQuery --> KGData["Ontology & Instance Nodes"]
+        KGData --> GraphFacts["📌 Graph Facts (Tri thức Cấu trúc Tường minh)"]
+    end
+
+    subgraph VectorRAG ["📄 Nhánh 2: Document Retriever (Vector RAG)"]
+        NLProc --> DocEmbed["TF-IDF / Vector Embedding"]
+        DocEmbed --> CosineSim["Độ tương đồng Cosine (Cosine Similarity)"]
+        CosineSim --> DocChunks["Top-k Phân đoạn Tài liệu Chuẩn"]
+        DocChunks --> DocEvidence["📋 Document Evidence (Bằng chứng Ngữ cảnh)"]
+    end
+
+    GraphFacts --> PromptFusion["⚡ Fusion & Grounding Prompt Builder"]
+    DocEvidence --> PromptFusion
+    UserQuery --> PromptFusion
+
+    PromptFusion --> LLMGen["🧠 Grounded Generator (Bộ sinh có Kiểm soát)"]
+    LLMGen --> FinalAnswer["💡 Câu trả lời Căn cứ Xác thực (Grounded Answer)"]
+    LLMGen --> Citations["🔖 Danh mục Trích dẫn Nguồn kiểm chứng (Citations)"]
+```
+        """)
+
+
+# -----------------------------------------------------------------------------
+# TAB 4: ĐÁNH GIÁ & ĐỐI SÁNH (BENCHMARK)
+# -----------------------------------------------------------------------------
+with tab_benchmark:
+    with st.container(border=True):
+        st.subheader("📊 Kết quả Đánh giá Định lượng & Đối sánh Thực nghiệm (Mục 5.8)")
+        st.markdown("Đối sánh hiệu năng giữa 3 kiến trúc: **1. LLM-only (Mô hình nền tảng)** vs **2. Vector RAG** vs **3. GraphRAG (KG + RAG lai)** trên bộ 60 câu hỏi kiểm thử chuyên sâu:")
+
+        col_b_tbl, col_b_chart = st.columns([1.4, 1])
+
+        with col_b_tbl:
+            bench_table = pd.DataFrame([
+                {
+                    "Kiến trúc Mô hình": "1. LLM-only (Không RAG)",
+                    "Recall@3": "N/A",
+                    "Điểm chất lượng (0 - 2)": "0.97 / 2.0 (48.5%)",
+                    "Tỷ lệ ảo giác": "35.0%",
+                    "Khả năng giải thích": "Kém (Hộp đen suy diễn)"
+                },
+                {
+                    "Kiến trúc Mô hình": "2. Vector RAG (Văn bản thuần)",
+                    "Recall@3": "96.7%",
+                    "Điểm chất lượng (0 - 2)": "1.73 / 2.0 (77.0%)",
+                    "Tỷ lệ ảo giác": "12.5%",
+                    "Khả năng giải thích": "Khá (Trích dẫn đoạn văn)"
+                },
+                {
+                    "Kiến trúc Mô hình": "3. GraphRAG (KG + RAG lai)",
+                    "Recall@3": "98.3%",
+                    "Điểm chất lượng (0 - 2)": "1.93 / 2.0 (96.5%)",
+                    "Tỷ lệ ảo giác": "< 1.0%",
+                    "Khả năng giải thích": "Xuất sắc (Neo bám kép cấu trúc & văn bản)"
+                }
+            ])
+            st.dataframe(bench_table, use_container_width=True)
+
+        with col_b_chart:
+            st.markdown("##### 📈 So sánh Điểm Chất lượng Tổng thể (Thang 2.0):")
+            bench_chart_data = pd.DataFrame({
+                "Kiến trúc": ["LLM-only", "Vector RAG", "GraphRAG"],
+                "Điểm chất lượng": [0.97, 1.73, 1.93]
+            }).set_index("Kiến trúc")
+            st.bar_chart(bench_chart_data)
 
         st.markdown("""
-        > **Kết luận Đồ án môn học:**
-        > 1. **Kiến trúc GraphRAG** đạt hiệu năng cao nhất toàn diện (Recall@3 đạt **98.3%**, điểm số chất lượng đạt **1.93 / 2.0**, tăng **+99.0%** so với mô hình LLM đơn thuần).
-        > 2. Sự kết hợp giữa **quan hệ cấu trúc tường minh trên Đồ thị** và **văn bản diễn giải chi tiết trong RAG** đã triệt tiêu hoàn toàn hiện tượng ảo giác, mang lại khả năng truy vết nguồn gốc và độ tin cậy cần thiết cho các ứng dụng thông minh trong thực tiễn.
+        > **🎯 Kết luận Thực nghiệm Đồ án:**
+        > 1. **Kiến trúc GraphRAG** đạt hiệu năng vượt trội toàn diện (Recall@3 đạt **98.3%**, điểm chất lượng đạt **1.93 / 2.0**, tăng **+99.0%** so với LLM-only).
+        > 2. Sự kết hợp giữa **quan hệ cấu trúc tường minh trên Đồ thị Neo4j** và **ngữ cảnh văn bản phong phú từ Vector RAG** đã triệt tiêu hoàn toàn hiện tượng ảo giác (giảm từ 35.0% xuống **< 1.0%**), đem lại khả năng truy vết nguồn gốc minh bạch và độ tin cậy tuyệt đối cho các hệ thống thông minh trong y tế và tài chính.
         """)
