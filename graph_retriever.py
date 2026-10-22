@@ -24,11 +24,11 @@ except ImportError:
 class GraphRetriever:
     """Bộ truy xuất sự kiện Đồ thị tri thức (Knowledge Graph Facts) từ Neo4j hoặc Mock Model."""
 
-    def __init__(self, uri: str = None, username: str = None, password: str = None, database: str = "neo4j"):
+    def __init__(self, uri: str = None, username: str = None, password: str = None, database: str = None):
         self.uri = uri or os.getenv("NEO4J_URI") or "bolt://localhost:7687"
         self.username = username or os.getenv("NEO4J_USERNAME") or os.getenv("NEO4J_USER") or "neo4j"
         self.password = password or os.getenv("NEO4J_PASSWORD") or "password"
-        self.database = database
+        self.database = database or os.getenv("NEO4J_DATABASE") or "neo4j"
         self.driver = None
         self.is_connected = False
         self._init_connection()

@@ -1,30 +1,44 @@
 # BÁO CÁO KẾT QUẢ PHÂN TÍCH VÀ SUY LUẬN ĐỒ THỊ TRI THỨC (MỤC 5.5)
 **Miền bài toán:** Thị trường tài chính & Chỉ số chứng khoán toàn cầu (Stock Market Knowledge Graph)
 **Hệ quản trị CSDL:** Neo4j Property Graph (GQL / Cypher)
-**Thời điểm tạo:** 2026-10-21 21:29:41
+**Thời điểm tạo:** 2026-10-22 10:30:03
 
 ---
 ## 1. Tổng quan cấu trúc Đồ thị tri thức Chứng khoán trên Neo4j
-- **Tổng số Node:** `292`
-- **Tổng số Relationship:** `354`
+- **Tổng số Node:** `1,076`
+- **Tổng số Relationship:** `3,905`
 
 ### Phân bố các loại Node (Node Labels):
 | Nhãn Node (Label) | Số lượng | Tỷ lệ (%) | Ý nghĩa biểu diễn |
 |:---|---:|---:|:---|
-| `:YearStat` | 260 | 89.04% | Thống kê chỉ số theo năm |
-| `:StockIndex` | 10 | 3.42% | Chỉ số chứng khoán |
-| `:Country` | 10 | 3.42% | Quốc gia niêm yết |
-| `:Region` | 6 | 2.05% | Khu vực kinh tế |
-| `:MarketEvent` | 6 | 2.05% | Sự kiện khủng hoảng kinh tế |
+| `:Patient` | 768 | 71.38% | Sự kiện khủng hoảng kinh tế |
+| `:YearStat` | 260 | 24.16% | Thống kê chỉ số theo năm |
+| `:Country` | 10 | 0.93% | Quốc gia niêm yết |
+| `:StockIndex` | 10 | 0.93% | Chỉ số chứng khoán |
+| `:Region` | 6 | 0.56% | Khu vực kinh tế |
+| `:MarketEvent` | 6 | 0.56% | Sự kiện khủng hoảng kinh tế |
+| `:AgeGroup` | 4 | 0.37% | Sự kiện khủng hoảng kinh tế |
+| `:BMIBand` | 4 | 0.37% | Sự kiện khủng hoảng kinh tế |
+| `:HbA1cBand` | 3 | 0.28% | Sự kiện khủng hoảng kinh tế |
+| `:GlucoseBand` | 3 | 0.28% | Sự kiện khủng hoảng kinh tế |
+| `:Condition` | 2 | 0.19% | Sự kiện khủng hoảng kinh tế |
 
 ### Phân bố các loại Quan hệ (Relationship Types):
 | Loại Quan hệ (Type) | Số lượng | Tầng biểu diễn | Ý nghĩa liên kết |
 |:---|---:|:---|:---|
+| `[:HAS_AGE_GROUP]` | 768 | Lớp 1: Data Layer | Quốc gia thuộc khu vực |
+| `[:HAS_HBA1C_BAND]` | 768 | Lớp 1: Data Layer | Quốc gia thuộc khu vực |
+| `[:HAS_BMI_BAND]` | 768 | Lớp 1: Data Layer | Quốc gia thuộc khu vực |
+| `[:HAS_GLUCOSE_BAND]` | 768 | Lớp 1: Data Layer | Quốc gia thuộc khu vực |
+| `[:HAS_CONDITION]` | 473 | Lớp 1: Data Layer | Quốc gia thuộc khu vực |
 | `[:HAS_YEAR_STAT]` | 260 | Lớp 1: Data Layer | Chỉ số liên kết dữ liệu theo năm |
 | `[:AFFECTED_BY]` | 38 | Lớp 2: Knowledge Layer | Bị ảnh hưởng bởi khủng hoảng |
 | `[:CORRELATED_WITH]` | 36 | Lớp 1: Data Layer | Tương quan cao (|corr| >= 0.6) |
-| `[:LISTED_IN]` | 10 | Lớp 1: Data Layer | Chỉ số thuộc quốc gia |
 | `[:IN_REGION]` | 10 | Lớp 1: Data Layer | Quốc gia thuộc khu vực |
+| `[:LISTED_IN]` | 10 | Lớp 1: Data Layer | Chỉ số thuộc quốc gia |
+| `[:INDICATES]` | 3 | Lớp 1: Data Layer | Quốc gia thuộc khu vực |
+| `[:COMORBID_WITH]` | 2 | Lớp 1: Data Layer | Quốc gia thuộc khu vực |
+| `[:INCREASES_RISK_OF]` | 1 | Lớp 1: Data Layer | Quốc gia thuộc khu vực |
 
 ---
 
@@ -32,34 +46,34 @@
 ### Câu 1: Phân bố số lượng chỉ số chứng khoán theo khu vực địa lý (Region)
 ```cypher
 MATCH (s:StockIndex)-[:LISTED_IN]->(c:Country)-[:IN_REGION]->(r:Region)
-RETURN r.name AS region,
-       count(s) AS num_indices,
-       collect(s.code) AS index_codes,
-       collect(s.name) AS index_names
-ORDER BY num_indices DESC
+        RETURN r.name AS region,
+               count(s) AS num_indices,
+               collect(s.code) AS index_codes,
+               collect(s.name) AS index_names
+        ORDER BY num_indices DESC
 ```
 | Khu vực địa lý (Region) | Số lượng chỉ số | Danh sách mã chỉ số | Tên chỉ số tiêu biểu |
 |:---|---:|:---|:---|
 | **Asia-Pacific** | 4 | `^N225, 000001.SS, ^NSEI, ^JKSE` | Nikkei 225, SSE Composite, NIFTY 50, IDX Composite |
 | **Europe** | 2 | `^FTSE, ^GDAXI` | FTSE 100, DAX 40 |
-| **Eurasia** | 1 | `XU100.IS` | BIST 100 |
-| **Latin America** | 1 | `^BVSP` | Bovespa |
-| **Middle East** | 1 | `^TASI.SR` | Tadawul All Share |
 | **North America** | 1 | `^GSPC` | S&P 500 |
+| **Latin America** | 1 | `^BVSP` | Bovespa |
+| **Eurasia** | 1 | `XU100.IS` | BIST 100 |
+| **Middle East** | 1 | `^TASI.SR` | Tadawul All Share |
 
 > **Nhận xét phân tích:** Khu vực Châu Á - Thái Bình Dương (`Asia-Pacific`) chiếm số lượng đông đảo nhất (4 chỉ số: Nikkei 225, SSE Composite, NIFTY 50, IDX Composite), đại diện cho các nền kinh tế đang phát triển và phát triển năng động nhất toàn cầu.
 
 ### Câu 2: Xếp hạng các chỉ số sụt giảm sâu nhất (Max Drawdown) trong Khủng hoảng tài chính toàn cầu 2008
 ```cypher
 MATCH (m:MarketEvent {name: 'Global Financial Crisis'})<-[:AFFECTED_BY]-(y:YearStat)<-[:HAS_YEAR_STAT]-(s:StockIndex)
-RETURN s.code AS index_code,
-       s.name AS index_name,
-       s.region AS region,
-       y.year AS year,
-       round(y.ret * 100, 2) AS annual_return_pct,
-       round(y.max_drawdown * 100, 2) AS max_drawdown_pct,
-       round(y.vol * 100, 2) AS volatility_pct
-ORDER BY y.max_drawdown ASC
+        RETURN s.code AS index_code,
+               s.name AS index_name,
+               s.region AS region,
+               y.year AS year,
+               round(y.ret * 100, 2) AS annual_return_pct,
+               round(y.max_drawdown * 100, 2) AS max_drawdown_pct,
+               round(y.vol * 100, 2) AS volatility_pct
+        ORDER BY y.max_drawdown ASC
 ```
 | Hạng | Mã chỉ số | Tên chỉ số | Khu vực | Lợi suất năm (%) | Mức sụt giảm tối đa (%) | Độ biến động quy năm (%) |
 |:---:|:---|:---|:---|---:|---:|---:|
@@ -78,19 +92,19 @@ ORDER BY y.max_drawdown ASC
 ### Câu 3: So sánh mức sụt giảm trung bình của các khu vực trong cú sốc COVID-19 (năm 2020)
 ```cypher
 MATCH (m:MarketEvent {name: 'COVID-19 Crash'})<-[:AFFECTED_BY]-(y:YearStat)<-[:HAS_YEAR_STAT]-(s:StockIndex)-[:LISTED_IN]->(:Country)-[:IN_REGION]->(r:Region)
-RETURN r.name AS region,
-       count(s) AS num_indices,
-       round(avg(y.max_drawdown) * 100, 2) AS avg_drawdown_pct,
-       round(avg(y.vol) * 100, 2) AS avg_volatility_pct,
-       round(avg(y.ret) * 100, 2) AS avg_annual_return_pct
-ORDER BY avg_drawdown_pct ASC
+        RETURN r.name AS region,
+               count(s) AS num_indices,
+               round(avg(y.max_drawdown) * 100, 2) AS avg_drawdown_pct,
+               round(avg(y.vol) * 100, 2) AS avg_volatility_pct,
+               round(avg(y.ret) * 100, 2) AS avg_annual_return_pct
+        ORDER BY avg_drawdown_pct ASC
 ```
 | Khu vực địa lý (Region) | Số chỉ số | Mức sụt giảm TB (Max Drawdown %) | Độ biến động TB (%) | Lợi suất TB cả năm 2020 (%) | Đánh giá mức độ tổn thương |
 |:---|---:|---:|---:|---:|:---|
-| **Europe** | 2 | **-49.28%** | 48.23% | 6.16% | Tổn thương nặng nề nhất |
+| **Europe** | 2 | **-49.28%** | 48.23% | 6.17% | Tổn thương nặng nề nhất |
 | **Middle East** | 1 | **-45.03%** | 32.09% | -12.25% | Tổn thương nặng nề nhất |
 | **Latin America** | 1 | **-42.55%** | 46.42% | -16.32% | Chịu tác động lớn |
-| **Asia-Pacific** | 4 | **-35.70%** | 43.02% | 82.66% | Chịu tác động lớn |
+| **Asia-Pacific** | 4 | **-35.71%** | 43.02% | 82.66% | Chịu tác động lớn |
 | **Eurasia** | 1 | **-35.68%** | 36.73% | 8.52% | Chịu tác động lớn |
 | **North America** | 1 | **-29.70%** | 36.63% | 38.75% | Hồi phục nhanh và kiên cường |
 
@@ -99,15 +113,15 @@ ORDER BY avg_drawdown_pct ASC
 ### Câu 4: Thống kê các năm chỉ số S&P 500 (`^GSPC`) chịu mức sụt giảm nghiêm trọng nhất lịch sử
 ```cypher
 MATCH (s:StockIndex {code: '^GSPC'})-[:HAS_YEAR_STAT]->(y:YearStat)
-WHERE y.return_band = 'Severe Drop (<-20%)' OR y.max_drawdown <= -0.30
-OPTIONAL MATCH (y)-[:AFFECTED_BY]->(m:MarketEvent)
-RETURN y.year AS year,
+        WHERE y.return_band = 'Severe Drop (<-20%)' OR y.max_drawdown <= -0.30
+        OPTIONAL MATCH (y)-[:AFFECTED_BY]->(m:MarketEvent)
+        RETURN y.year AS year,
                round(y.ret * 100, 2) AS annual_return_pct,
                round(y.max_drawdown * 100, 2) AS max_drawdown_pct,
                round(y.vol * 100, 2) AS volatility_pct,
                y.return_band AS return_band,
                coalesce(m.name, 'Market Volatility') AS historical_event
-ORDER BY y.max_drawdown ASC
+        ORDER BY y.max_drawdown ASC
 ```
 | Năm | Lợi suất năm (%) | Mức sụt giảm tối đa (%) | Độ biến động (%) | Phân nhóm lợi suất | Sự kiện lịch sử gắn liền |
 |:---:|---:|---:|---:|:---|:---|
@@ -128,10 +142,10 @@ ORDER BY y.max_drawdown ASC
 ### Câu 5: Suy luận đa bước (Multi-hop Reasoning) phát hiện các cặp chỉ số tương quan cao cùng chịu biến cố Khủng hoảng toàn cầu 2008
 ```cypher
 MATCH (s1:StockIndex)-[r:CORRELATED_WITH]->(s2:StockIndex)
-WHERE s1.code < s2.code
-MATCH (s1)-[:HAS_YEAR_STAT]->(y1:YearStat)-[:AFFECTED_BY]->(m:MarketEvent {name: 'Global Financial Crisis'})
-MATCH (s2)-[:HAS_YEAR_STAT]->(y2:YearStat)-[:AFFECTED_BY]->(m)
-RETURN s1.name AS index_1,
+        WHERE s1.code < s2.code
+        MATCH (s1)-[:HAS_YEAR_STAT]->(y1:YearStat)-[:AFFECTED_BY]->(m:MarketEvent {name: 'Global Financial Crisis'})
+        MATCH (s2)-[:HAS_YEAR_STAT]->(y2:YearStat)-[:AFFECTED_BY]->(m)
+        RETURN s1.name AS index_1,
                s1.region AS region_1,
                s2.name AS index_2,
                s2.region AS region_2,
@@ -139,7 +153,7 @@ RETURN s1.name AS index_1,
                round(y1.max_drawdown * 100, 2) AS mdd_index_1_pct,
                round(y2.max_drawdown * 100, 2) AS mdd_index_2_pct,
                m.name AS shared_crisis
-ORDER BY r.corr_value DESC
+        ORDER BY r.corr_value DESC
 ```
 | Chỉ số 1 | Khu vực 1 | Chỉ số 2 | Khu vực 2 | Hệ số tương quan | Sụt giảm 2008 (CS 1) | Sụt giảm 2008 (CS 2) | Biến cố chung |
 |:---|:---|:---|:---|:---:|---:|---:|:---|

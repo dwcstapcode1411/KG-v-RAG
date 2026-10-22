@@ -1,7 +1,7 @@
 # BÁO CÁO KẾT QUẢ PHÂN TÍCH VÀ SUY LUẬN ĐỒ THỊ TRI THỨC (MỤC 5.4)
 **Miền bài toán:** Y tế lâm sàng - Đồ thị tri thức Bệnh đái tháo đường (Diabetes Knowledge Graph)
 **Hệ quản trị CSDL:** Neo4j Property Graph (GQL / Cypher)
-**Thời điểm tạo:** 2026-10-21 21:29:24
+**Thời điểm tạo:** 2026-10-22 10:29:34
 
 ---
 ## 1. Tổng quan cấu trúc Đồ thị tri thức trên Neo4j
@@ -14,17 +14,17 @@
 | `:Patient` | 768 | 97.96% |
 | `:AgeGroup` | 4 | 0.51% |
 | `:BMIBand` | 4 | 0.51% |
-| `:GlucoseBand` | 3 | 0.38% |
 | `:HbA1cBand` | 3 | 0.38% |
+| `:GlucoseBand` | 3 | 0.38% |
 | `:Condition` | 2 | 0.26% |
 
 ### Phân bố các loại Quan hệ (Relationship Types):
 | Loại Quan hệ (Type) | Số lượng | Tầng biểu diễn |
 |:---|---:|:---|
 | `[:HAS_AGE_GROUP]` | 768 | Lớp 1: Data Layer (Patient Links) |
+| `[:HAS_HBA1C_BAND]` | 768 | Lớp 1: Data Layer (Patient Links) |
 | `[:HAS_BMI_BAND]` | 768 | Lớp 1: Data Layer (Patient Links) |
 | `[:HAS_GLUCOSE_BAND]` | 768 | Lớp 1: Data Layer (Patient Links) |
-| `[:HAS_HBA1C_BAND]` | 768 | Lớp 1: Data Layer (Patient Links) |
 | `[:HAS_CONDITION]` | 473 | Lớp 1: Data Layer (Patient Links) |
 | `[:INDICATES]` | 3 | Lớp 2: Knowledge Layer (ADA/WHO) |
 | `[:COMORBID_WITH]` | 2 | Lớp 2: Knowledge Layer (ADA/WHO) |
@@ -36,13 +36,13 @@
 ### Câu 1: Tỷ lệ mắc tiểu đường theo phân nhóm chỉ số HbA1c
 ```cypher
 MATCH (h:HbA1cBand)<-[:HAS_HBA1C_BAND]-(p:Patient)
-OPTIONAL MATCH (p)-[:HAS_CONDITION]->(c:Condition {name: 'Diabetes'})
-WITH h.name AS hba1c_band, count(p) AS total_patients, count(c) AS diabetic_patients
-RETURN hba1c_band,
-       total_patients,
-       diabetic_patients,
-       round(100.0 * diabetic_patients / total_patients, 2) AS diabetes_rate_pct
-ORDER BY diabetes_rate_pct DESC
+        OPTIONAL MATCH (p)-[:HAS_CONDITION]->(c:Condition {name: 'Diabetes'})
+        WITH h.name AS hba1c_band, count(p) AS total_patients, count(c) AS diabetic_patients
+        RETURN hba1c_band,
+               total_patients,
+               diabetic_patients,
+               round(100.0 * diabetic_patients / total_patients, 2) AS diabetes_rate_pct
+        ORDER BY diabetes_rate_pct DESC
 ```
 | Phân nhóm HbA1c | Tổng số bệnh nhân | Số ca tiểu đường | Tỷ lệ mắc bệnh (%) | Đánh giá lâm sàng |
 |:---|---:|---:|---:|:---|
@@ -55,13 +55,13 @@ ORDER BY diabetes_rate_pct DESC
 ### Câu 2: Tỷ lệ mắc tiểu đường theo các phân nhóm độ tuổi
 ```cypher
 MATCH (a:AgeGroup)<-[:HAS_AGE_GROUP]-(p:Patient)
-OPTIONAL MATCH (p)-[:HAS_CONDITION]->(c:Condition {name: 'Diabetes'})
-WITH a.name AS age_group, count(p) AS total_patients, count(c) AS diabetic_patients
-RETURN age_group,
-       total_patients,
-       diabetic_patients,
-       round(100.0 * diabetic_patients / total_patients, 2) AS diabetes_rate_pct
-ORDER BY age_group
+        OPTIONAL MATCH (p)-[:HAS_CONDITION]->(c:Condition {name: 'Diabetes'})
+        WITH a.name AS age_group, count(p) AS total_patients, count(c) AS diabetic_patients
+        RETURN age_group,
+               total_patients,
+               diabetic_patients,
+               round(100.0 * diabetic_patients / total_patients, 2) AS diabetes_rate_pct
+        ORDER BY age_group
 ```
 | Nhóm độ tuổi | Tổng số bệnh nhân | Số ca tiểu đường | Tỷ lệ mắc bệnh (%) | Xu hướng lứa tuổi |
 |:---|---:|---:|---:|:---|
@@ -75,13 +75,13 @@ ORDER BY age_group
 ### Câu 3: Tỷ lệ mắc tiểu đường theo phân nhóm chỉ số khối cơ thể (BMI)
 ```cypher
 MATCH (b:BMIBand)<-[:HAS_BMI_BAND]-(p:Patient)
-OPTIONAL MATCH (p)-[:HAS_CONDITION]->(c:Condition {name: 'Diabetes'})
-WITH b.name AS bmi_band, count(p) AS total_patients, count(c) AS diabetic_patients
-RETURN bmi_band,
-       total_patients,
-       diabetic_patients,
-       round(100.0 * diabetic_patients / total_patients, 2) AS diabetes_rate_pct
-ORDER BY diabetes_rate_pct DESC
+        OPTIONAL MATCH (p)-[:HAS_CONDITION]->(c:Condition {name: 'Diabetes'})
+        WITH b.name AS bmi_band, count(p) AS total_patients, count(c) AS diabetic_patients
+        RETURN bmi_band,
+               total_patients,
+               diabetic_patients,
+               round(100.0 * diabetic_patients / total_patients, 2) AS diabetes_rate_pct
+        ORDER BY diabetes_rate_pct DESC
 ```
 | Phân nhóm BMI | Tổng số bệnh nhân | Số ca tiểu đường | Tỷ lệ mắc bệnh (%) | Phân loại WHO |
 |:---|---:|---:|---:|:---|
@@ -95,19 +95,19 @@ ORDER BY diabetes_rate_pct DESC
 ### Câu 4: Phân tích đồng mắc (Comorbidity) giữa Tăng huyết áp và Tiểu đường
 ```cypher
 MATCH (p:Patient)
-OPTIONAL MATCH (p)-[:HAS_CONDITION]->(cd:Condition {name: 'Diabetes'})
-OPTIONAL MATCH (p)-[:HAS_CONDITION]->(ch:Condition {name: 'Hypertension'})
-WITH count(p) AS total,
-     count(CASE WHEN cd IS NOT NULL AND ch IS NOT NULL THEN 1 END) AS both_conditions,
-     count(CASE WHEN cd IS NOT NULL AND ch IS NULL THEN 1 END) AS diabetes_only,
-     count(CASE WHEN cd IS NULL AND ch IS NOT NULL THEN 1 END) AS hypertension_only,
-     count(CASE WHEN cd IS NULL AND ch IS NULL THEN 1 END) AS neither_condition
-RETURN total,
-       both_conditions,
-       diabetes_only,
-       hypertension_only,
-       neither_condition,
-       round(100.0 * both_conditions / total, 2) AS comorbidity_rate_pct
+        OPTIONAL MATCH (p)-[:HAS_CONDITION]->(cd:Condition {name: 'Diabetes'})
+        OPTIONAL MATCH (p)-[:HAS_CONDITION]->(ch:Condition {name: 'Hypertension'})
+        WITH count(p) AS total,
+             count(CASE WHEN cd IS NOT NULL AND ch IS NOT NULL THEN 1 END) AS both_conditions,
+             count(CASE WHEN cd IS NOT NULL AND ch IS NULL THEN 1 END) AS diabetes_only,
+             count(CASE WHEN cd IS NULL AND ch IS NOT NULL THEN 1 END) AS hypertension_only,
+             count(CASE WHEN cd IS NULL AND ch IS NULL THEN 1 END) AS neither_condition
+        RETURN total,
+               both_conditions,
+               diabetes_only,
+               hypertension_only,
+               neither_condition,
+               round(100.0 * both_conditions / total, 2) AS comorbidity_rate_pct
 ```
 | Trạng thái bệnh lý | Số lượng bệnh nhân | Tỷ lệ trên toàn bộ mẫu (%) |
 |:---|---:|---:|
@@ -122,12 +122,12 @@ RETURN total,
 ### Câu 5: Suy luận đa bước (Multi-hop Reasoning) phát hiện ca nguy cơ cao chưa được chẩn đoán
 ```cypher
 MATCH (p:Patient)-[:HAS_BMI_BAND]->(b:BMIBand {name: 'Obese'})
-MATCH (p)-[:HAS_HBA1C_BAND]->(h:HbA1cBand)-[r:INDICATES]->(c:Condition {name: 'Diabetes'})
-WHERE NOT (p)-[:HAS_CONDITION]->(c)
-RETURN count(p) AS undiagnosed_high_risk_patients,
-       collect(p.id)[0..10] AS sample_patient_ids,
-       r.source AS evidence_source,
-       r.threshold AS clinical_threshold
+        MATCH (p)-[:HAS_HBA1C_BAND]->(h:HbA1cBand)-[r:INDICATES]->(c:Condition {name: 'Diabetes'})
+        WHERE NOT (p)-[:HAS_CONDITION]->(c)
+        RETURN count(p) AS undiagnosed_high_risk_patients,
+               collect(p.id)[0..10] AS sample_patient_ids,
+               r.source AS evidence_source,
+               r.threshold AS clinical_threshold
 ```
 | Tiêu chí suy luận | Kết quả từ Đồ thị tri thức |
 |:---|:---|

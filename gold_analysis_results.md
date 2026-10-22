@@ -1,23 +1,34 @@
 # BÁO CÁO KẾT QUẢ PHÂN TÍCH VÀ SUY LUẬN ĐỒ THỊ TRI THỨC (MỤC 5.6)
 **Miền bài toán:** Thị trường hàng hóa & Dự báo phân tích Giá Vàng (Gold Market Knowledge Graph)
 **Hệ quản trị CSDL:** Neo4j Property Graph (GQL / Cypher)
-**Thời điểm tạo:** 2026-10-21 21:29:30
+**Thời điểm tạo:** 2026-10-22 10:30:28
 
 ---
 ## 1. Tổng quan cấu trúc Đồ thị tri thức Thị trường Vàng trên Neo4j
-- **Tổng số Node:** `1,279`
-- **Tổng số Relationship:** `5,045`
+- **Tổng số Node:** `2,355`
+- **Tổng số Relationship:** `8,950`
 
 ### Phân bố các loại Node (Node Labels):
 | Nhãn Node (Label) | Số lượng | Tỷ lệ (%) | Ý nghĩa biểu diễn |
 |:---|---:|---:|:---|
-| `:GoldDay` | 1,259 | 98.44% | Phiên giao dịch theo ngày |
-| `:Factor` | 5 | 0.39% | Yếu tố kinh tế vĩ mô |
-| `:GoldEvent` | 5 | 0.39% | Sự kiện địa chính trị/lãi suất |
-| `:RSIState` | 3 | 0.23% | Trạng thái RSI |
-| `:BandState` | 3 | 0.23% | Vị thế dải Bollinger |
-| `:TrendState` | 3 | 0.23% | Xu hướng kỹ thuật |
-| `:Commodity` | 1 | 0.08% | Hàng hóa kim loại quý |
+| `:GoldDay` | 1,259 | 53.46% | Phiên giao dịch theo ngày |
+| `:Patient` | 768 | 32.61% | Sự kiện địa chính trị/lãi suất |
+| `:YearStat` | 260 | 11.04% | Sự kiện địa chính trị/lãi suất |
+| `:Country` | 10 | 0.42% | Sự kiện địa chính trị/lãi suất |
+| `:StockIndex` | 10 | 0.42% | Sự kiện địa chính trị/lãi suất |
+| `:Region` | 6 | 0.25% | Sự kiện địa chính trị/lãi suất |
+| `:MarketEvent` | 6 | 0.25% | Sự kiện địa chính trị/lãi suất |
+| `:Factor` | 5 | 0.21% | Yếu tố kinh tế vĩ mô |
+| `:GoldEvent` | 5 | 0.21% | Sự kiện địa chính trị/lãi suất |
+| `:AgeGroup` | 4 | 0.17% | Sự kiện địa chính trị/lãi suất |
+| `:BMIBand` | 4 | 0.17% | Sự kiện địa chính trị/lãi suất |
+| `:HbA1cBand` | 3 | 0.13% | Sự kiện địa chính trị/lãi suất |
+| `:GlucoseBand` | 3 | 0.13% | Sự kiện địa chính trị/lãi suất |
+| `:RSIState` | 3 | 0.13% | Trạng thái RSI |
+| `:BandState` | 3 | 0.13% | Vị thế dải Bollinger |
+| `:TrendState` | 3 | 0.13% | Xu hướng kỹ thuật |
+| `:Condition` | 2 | 0.08% | Sự kiện địa chính trị/lãi suất |
+| `:Commodity` | 1 | 0.04% | Hàng hóa kim loại quý |
 
 ### Phân bố các loại Quan hệ (Relationship Types):
 | Loại Quan hệ (Type) | Số lượng | Tầng biểu diễn | Ý nghĩa liên kết |
@@ -26,8 +37,21 @@
 | `[:HAS_BAND_POSITION]` | 1,259 | Lớp 1: Time Series & Technical Layer | Liên kết dải Bollinger |
 | `[:HAS_TREND]` | 1,259 | Lớp 1: Time Series & Technical Layer | Liên kết xu hướng SMA |
 | `[:NEXT]` | 1,258 | Lớp 1: Time Series & Technical Layer | Chuỗi thời gian liên tiếp |
+| `[:HAS_AGE_GROUP]` | 768 | Lớp 1: Time Series & Technical Layer | Sự kiện gắn với phiên giao dịch |
+| `[:HAS_HBA1C_BAND]` | 768 | Lớp 1: Time Series & Technical Layer | Sự kiện gắn với phiên giao dịch |
+| `[:HAS_BMI_BAND]` | 768 | Lớp 1: Time Series & Technical Layer | Sự kiện gắn với phiên giao dịch |
+| `[:HAS_GLUCOSE_BAND]` | 768 | Lớp 1: Time Series & Technical Layer | Sự kiện gắn với phiên giao dịch |
+| `[:HAS_CONDITION]` | 473 | Lớp 1: Time Series & Technical Layer | Sự kiện gắn với phiên giao dịch |
+| `[:HAS_YEAR_STAT]` | 260 | Lớp 1: Time Series & Technical Layer | Sự kiện gắn với phiên giao dịch |
+| `[:AFFECTED_BY]` | 38 | Lớp 1: Time Series & Technical Layer | Sự kiện gắn với phiên giao dịch |
+| `[:CORRELATED_WITH]` | 36 | Lớp 1: Time Series & Technical Layer | Sự kiện gắn với phiên giao dịch |
+| `[:IN_REGION]` | 10 | Lớp 1: Time Series & Technical Layer | Sự kiện gắn với phiên giao dịch |
+| `[:LISTED_IN]` | 10 | Lớp 1: Time Series & Technical Layer | Sự kiện gắn với phiên giao dịch |
 | `[:INFLUENCES]` | 5 | Lớp 2: Macro & Knowledge Layer | Tác động vĩ mô lên vàng |
 | `[:OCCURRED_ON]` | 5 | Lớp 2: Macro & Knowledge Layer | Sự kiện gắn với phiên giao dịch |
+| `[:INDICATES]` | 3 | Lớp 1: Time Series & Technical Layer | Sự kiện gắn với phiên giao dịch |
+| `[:COMORBID_WITH]` | 2 | Lớp 1: Time Series & Technical Layer | Sự kiện gắn với phiên giao dịch |
+| `[:INCREASES_RISK_OF]` | 1 | Lớp 1: Time Series & Technical Layer | Sự kiện gắn với phiên giao dịch |
 
 ---
 
@@ -35,11 +59,11 @@
 ### Câu 1: Truy xuất các yếu tố vĩ mô và chiều tác động đối với giá vàng (INFLUENCES)
 ```cypher
 MATCH (f:Factor)-[r:INFLUENCES]->(c:Commodity {name: 'Gold'})
-RETURN f.name AS factor,
-       r.direction AS direction,
-       r.confidence AS confidence,
-       f.description AS description
-ORDER BY r.direction DESC, f.name ASC
+        RETURN f.name AS factor,
+               r.direction AS direction,
+               r.confidence AS confidence,
+               f.description AS description
+        ORDER BY r.direction DESC, f.name ASC
 ```
 | Yếu tố vĩ mô (Factor) | Chiều tác động (Direction) | Độ tin cậy (Confidence) | Cơ chế tác động kinh tế học |
 |:---|:---:|:---:|:---|
@@ -54,11 +78,11 @@ ORDER BY r.direction DESC, f.name ASC
 ### Câu 2: Thống kê số ngày và lợi suất ngày trung bình theo từng trạng thái xu hướng (TrendState)
 ```cypher
 MATCH (t:TrendState)<-[:HAS_TREND]-(d:GoldDay)
-RETURN t.name AS trend_state,
-       count(d) AS num_days,
-       round(avg(d.daily_return) * 100, 3) AS avg_daily_return_pct,
-       round(avg(d.close), 2) AS avg_close_price
-ORDER BY avg_daily_return_pct DESC
+        RETURN t.name AS trend_state,
+               count(d) AS num_days,
+               round(avg(d.daily_return) * 100, 3) AS avg_daily_return_pct,
+               round(avg(d.close), 2) AS avg_close_price
+        ORDER BY avg_daily_return_pct DESC
 ```
 | Trạng thái xu hướng | Số phiên giao dịch | Tỷ lệ phiên (%) | Lợi suất ngày TB (%) | Giá đóng cửa TB ($/oz) | Đánh giá kỹ thuật |
 |:---|---:|---:|---:|---:|:---|
@@ -71,13 +95,13 @@ ORDER BY avg_daily_return_pct DESC
 ### Câu 3: Duyệt chuỗi thời gian đa bước (Multi-hop Traversal): Lợi suất sau 5 phiên khi RSI ở vùng Quá bán (Oversold)
 ```cypher
 MATCH (d:GoldDay)-[:HAS_RSI_STATE]->(:RSIState {name: 'Oversold'})
-MATCH (d)-[:NEXT*5]->(f:GoldDay)
-WITH d, f, ((f.close - d.close) / d.close) AS return_5d
-RETURN count(d) AS oversold_occurrences,
-       round(avg(return_5d) * 100, 2) AS avg_5d_forward_return_pct,
-       round(min(return_5d) * 100, 2) AS min_5d_return_pct,
-       round(max(return_5d) * 100, 2) AS max_5d_return_pct,
-       round(100.0 * count(CASE WHEN return_5d > 0 THEN 1 END) / count(d), 1) AS win_rate_pct
+        MATCH (d)-[:NEXT*5]->(f:GoldDay)
+        WITH d, f, ((f.close - d.close) / d.close) AS return_5d
+        RETURN count(d) AS oversold_occurrences,
+               round(avg(return_5d) * 100, 2) AS avg_5d_forward_return_pct,
+               round(min(return_5d) * 100, 2) AS min_5d_return_pct,
+               round(max(return_5d) * 100, 2) AS max_5d_return_pct,
+               round(100.0 * count(CASE WHEN return_5d > 0 THEN 1 END) / count(d), 1) AS win_rate_pct
 ```
 | Chỉ số thống kê kiểm thử | Kết quả từ Đồ thị tri thức chuỗi thời gian |
 |:---|:---|
@@ -93,19 +117,19 @@ RETURN count(d) AS oversold_occurrences,
 ### Câu 4: Phản ứng biến động của giá vàng trước và sau các sự kiện địa chính trị / lãi suất (GoldEvent)
 ```cypher
 MATCH (e:GoldEvent)-[:OCCURRED_ON]->(d:GoldDay)
-OPTIONAL MATCH (prev:GoldDay)-[:NEXT*5]->(d)
-OPTIONAL MATCH (d)-[:NEXT*5]->(next:GoldDay)
-WITH e, d,
-     round(((d.close - prev.close) / prev.close) * 100, 2) AS return_pre_5d,
-     round(((next.close - d.close) / d.close) * 100, 2) AS return_post_5d
-RETURN e.name AS event_name,
-       e.type AS event_type,
-       d.date AS event_date,
-       d.close AS event_close_price,
-       return_pre_5d,
-       return_post_5d,
-       e.description AS description
-ORDER BY d.date ASC
+        OPTIONAL MATCH (prev:GoldDay)-[:NEXT*5]->(d)
+        OPTIONAL MATCH (d)-[:NEXT*5]->(next:GoldDay)
+        WITH e, d,
+             round(((d.close - prev.close) / prev.close) * 100, 2) AS return_pre_5d,
+             round(((next.close - d.close) / d.close) * 100, 2) AS return_post_5d
+        RETURN e.name AS event_name,
+               e.type AS event_type,
+               d.date AS event_date,
+               d.close AS event_close_price,
+               return_pre_5d,
+               return_post_5d,
+               e.description AS description
+        ORDER BY d.date ASC
 ```
 | Tên sự kiện vĩ mô | Phân loại | Ngày diễn ra | Giá đóng cửa ($/oz) | Biến động T-5 trước sự kiện (%) | Biến động T+5 sau sự kiện (%) | Tác động thị trường |
 |:---|:---|:---:|---:|---:|---:|:---|
@@ -120,14 +144,14 @@ ORDER BY d.date ASC
 ### Câu 5: Tìm các phiên giao dịch đồng thời Quá mua (RSI > 70) và Vượt dải trên Bollinger Bands (Above upper band)
 ```cypher
 MATCH (d:GoldDay)-[:HAS_RSI_STATE]->(:RSIState {name: 'Overbought'})
-MATCH (d)-[:HAS_BAND_POSITION]->(:BandState {name: 'Above upper band'})
-RETURN d.date AS date,
-       d.close AS close_price,
-       d.rsi AS rsi_value,
-       d.bb_upper AS bb_upper,
-       round(((d.close - d.bb_upper) / d.bb_upper) * 100, 2) AS pct_above_band
-ORDER BY d.date DESC
-LIMIT 10
+        MATCH (d)-[:HAS_BAND_POSITION]->(:BandState {name: 'Above upper band'})
+        RETURN d.date AS date,
+               d.close AS close_price,
+               d.rsi AS rsi_value,
+               d.bb_upper AS bb_upper,
+               round(((d.close - d.bb_upper) / d.bb_upper) * 100, 2) AS pct_above_band
+        ORDER BY d.date DESC
+        LIMIT 10
 ```
 | Phiên giao dịch | Giá đóng cửa ($/oz) | Chỉ số RSI (14) | Dải trên Bollinger Bands | Mức vượt dải (%) | Trạng thái kỹ thuật cực đoan |
 |:---:|---:|---:|---:|---:|:---|

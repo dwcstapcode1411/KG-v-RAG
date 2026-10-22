@@ -814,7 +814,7 @@ def main():
     parser.add_argument("--uri", type=str, default=None, help="Neo4j Bolt/Neo4j+s URI (ví dụ: bolt://localhost:7687)")
     parser.add_argument("-u", "--username", type=str, default=None, help="Neo4j Username (mặc định: neo4j)")
     parser.add_argument("-p", "--password", type=str, default=None, help="Neo4j Password")
-    parser.add_argument("-d", "--database", type=str, default="neo4j", help="Tên database Neo4j (mặc định: neo4j)")
+    parser.add_argument("-d", "--database", type=str, default=None, help="Tên database Neo4j (mặc định từ .env hoặc neo4j)")
     parser.add_argument("--csv", type=str, default=r"C:\DATA\diabetes_dataset.csv", help="Đường dẫn file CSV dữ liệu")
     parser.add_argument("--batch-size", type=int, default=1000, help="Kích thước lô khi nạp UNWIND (mặc định: 1000)")
     parser.add_argument("--report", type=str, default="diabetes_analysis_results.md", help="Tên file markdown xuất kết quả")

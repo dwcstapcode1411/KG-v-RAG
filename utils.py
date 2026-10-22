@@ -19,7 +19,7 @@ except ImportError:  # pragma: no cover – optional dependency
     Driver = None  # type: ignore
 
 
-def get_neo4j_config(args: Any = None, uri: str = None, username: str = None, password: str = None, database: str = "neo4j") -> Dict[str, str]:
+def get_neo4j_config(args: Any = None, uri: str = None, username: str = None, password: str = None, database: str = None) -> Dict[str, str]:
     """Return a configuration dict for Neo4j.
     Values are taken from explicit arguments / args namespace, then environment variables,
     finally defaults.
@@ -36,7 +36,7 @@ def get_neo4j_config(args: Any = None, uri: str = None, username: str = None, pa
         "uri": uri or os.getenv("NEO4J_URI") or "bolt://localhost:7687",
         "username": username or os.getenv("NEO4J_USERNAME") or os.getenv("NEO4J_USER") or "neo4j",
         "password": password or os.getenv("NEO4J_PASSWORD") or "password",
-        "database": database or "neo4j",
+        "database": database or os.getenv("NEO4J_DATABASE") or "neo4j",
     }
 
 
