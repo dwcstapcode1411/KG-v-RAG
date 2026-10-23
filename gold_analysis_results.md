@@ -1,19 +1,19 @@
 # BÁO CÁO KẾT QUẢ PHÂN TÍCH VÀ SUY LUẬN ĐỒ THỊ TRI THỨC (MỤC 5.6)
 **Miền bài toán:** Thị trường hàng hóa & Dự báo phân tích Giá Vàng (Gold Market Knowledge Graph)
 **Hệ quản trị CSDL:** Neo4j Property Graph (GQL / Cypher)
-**Thời điểm tạo:** 2026-10-22 10:30:28
+**Thời điểm tạo:** 2026-10-23 09:50:31
 
 ---
 ## 1. Tổng quan cấu trúc Đồ thị tri thức Thị trường Vàng trên Neo4j
-- **Tổng số Node:** `2,355`
-- **Tổng số Relationship:** `8,950`
+- **Tổng số Node:** `2,358`
+- **Tổng số Relationship:** `8,962`
 
 ### Phân bố các loại Node (Node Labels):
 | Nhãn Node (Label) | Số lượng | Tỷ lệ (%) | Ý nghĩa biểu diễn |
 |:---|---:|---:|:---|
-| `:GoldDay` | 1,259 | 53.46% | Phiên giao dịch theo ngày |
-| `:Patient` | 768 | 32.61% | Sự kiện địa chính trị/lãi suất |
-| `:YearStat` | 260 | 11.04% | Sự kiện địa chính trị/lãi suất |
+| `:GoldDay` | 1,262 | 53.52% | Phiên giao dịch theo ngày |
+| `:Patient` | 768 | 32.57% | Sự kiện địa chính trị/lãi suất |
+| `:YearStat` | 260 | 11.03% | Sự kiện địa chính trị/lãi suất |
 | `:Country` | 10 | 0.42% | Sự kiện địa chính trị/lãi suất |
 | `:StockIndex` | 10 | 0.42% | Sự kiện địa chính trị/lãi suất |
 | `:Region` | 6 | 0.25% | Sự kiện địa chính trị/lãi suất |
@@ -33,10 +33,10 @@
 ### Phân bố các loại Quan hệ (Relationship Types):
 | Loại Quan hệ (Type) | Số lượng | Tầng biểu diễn | Ý nghĩa liên kết |
 |:---|---:|:---|:---|
-| `[:HAS_RSI_STATE]` | 1,259 | Lớp 1: Time Series & Technical Layer | Liên kết chỉ báo RSI |
-| `[:HAS_BAND_POSITION]` | 1,259 | Lớp 1: Time Series & Technical Layer | Liên kết dải Bollinger |
-| `[:HAS_TREND]` | 1,259 | Lớp 1: Time Series & Technical Layer | Liên kết xu hướng SMA |
-| `[:NEXT]` | 1,258 | Lớp 1: Time Series & Technical Layer | Chuỗi thời gian liên tiếp |
+| `[:HAS_RSI_STATE]` | 1,262 | Lớp 1: Time Series & Technical Layer | Liên kết chỉ báo RSI |
+| `[:HAS_BAND_POSITION]` | 1,262 | Lớp 1: Time Series & Technical Layer | Liên kết dải Bollinger |
+| `[:HAS_TREND]` | 1,262 | Lớp 1: Time Series & Technical Layer | Liên kết xu hướng SMA |
+| `[:NEXT]` | 1,261 | Lớp 1: Time Series & Technical Layer | Chuỗi thời gian liên tiếp |
 | `[:HAS_AGE_GROUP]` | 768 | Lớp 1: Time Series & Technical Layer | Sự kiện gắn với phiên giao dịch |
 | `[:HAS_HBA1C_BAND]` | 768 | Lớp 1: Time Series & Technical Layer | Sự kiện gắn với phiên giao dịch |
 | `[:HAS_BMI_BAND]` | 768 | Lớp 1: Time Series & Technical Layer | Sự kiện gắn với phiên giao dịch |
@@ -86,9 +86,9 @@ MATCH (t:TrendState)<-[:HAS_TREND]-(d:GoldDay)
 ```
 | Trạng thái xu hướng | Số phiên giao dịch | Tỷ lệ phiên (%) | Lợi suất ngày TB (%) | Giá đóng cửa TB ($/oz) | Đánh giá kỹ thuật |
 |:---|---:|---:|---:|---:|:---|
-| **Uptrend** | 672 | 53.4% | **+0.251%** | $2,897.57 | Động lượng tăng vượt trội |
+| **Uptrend** | 672 | 53.2% | **+0.251%** | $2,897.57 | Động lượng tăng vượt trội |
 | **Sideways** | 265 | 21.0% | **-0.002%** | $2,194.99 | Giai đoạn tích lũy dao động hẹp |
-| **Downtrend** | 322 | 25.6% | **-0.228%** | $2,795.61 | Áp lực bán chiếm ưu thế |
+| **Downtrend** | 325 | 25.8% | **-0.227%** | $2,808.12 | Áp lực bán chiếm ưu thế |
 
 > **Nhận xét phân tích:** Trong giai đoạn 2021–2026, giá vàng nằm trong trạng thái `Uptrend` chiếm tới **53.4%** thời gian với lợi suất ngày trung bình **+0.251%**, chứng minh xu hướng tăng giá mang tính cấu trúc của kim loại quý trong chu kỳ lạm phát và căng thẳng địa chính trị.
 

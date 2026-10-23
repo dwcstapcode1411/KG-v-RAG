@@ -1,7 +1,7 @@
 # BÁO CÁO ĐÁNH GIÁ ĐỊNH LƯỢNG HỆ THỐNG HYBRID KG + RAG (MỤC 5.8)
-**Ngày thực hiện:** 2026-10-23 08:39:54
+**Ngày thực hiện:** 2026-10-23 09:59:27
 **Quy mô tập kiểm thử:** 60 câu hỏi chuẩn hóa (20 câu hỏi / miền)
-**Thời gian thực thi đánh giá:** 0.14 giây
+**Thời gian thực thi đánh giá:** 1.19 giây
 
 ---
 ## 1. Tiêu chí và Thang đo Đánh giá (Evaluation Metrics)

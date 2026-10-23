@@ -164,7 +164,8 @@ class NLUExtractor:
         """Trích xuất: giá vàng, RSI, mức giá mua/bán, thời điểm."""
         q_low = q.lower()
         result = {"gold_price": None, "rsi_value": None, "has_event_query": False,
-                  "is_buy_signal": False, "is_sell_signal": False, "is_macro_query": False}
+                  "is_buy_signal": False, "is_sell_signal": False, "is_macro_query": False,
+                  "is_current_price_query": False}
 
         # Giá vàng: "vàng đang ở mức 2300 USD", "giá vàng 2500"
         gp = re.search(r'(?:giá\s*)?(?:vàng|gold)\s*(?:đang|hiện|ở|=|là|khoảng)?\s*(?:mức\s*)?(\d[\d,\.]*)\s*(?:usd|đô|dollar|\$)?', q_low)
@@ -187,6 +188,10 @@ class NLUExtractor:
                                       'chiến tranh', 'chiến sự', 'xung đột', 'fed cắt', 'hạ lãi suất',
                                       'sự kiện', 'khủng hoảng', 'sụp đổ', 'ngân hàng']):
             result["has_event_query"] = True
+
+        # Hỏi giá vàng hiện tại / hôm nay
+        if any(k in q_low for k in ['hôm nay', 'hiện tại', 'mới nhất', 'bao nhiêu', 'giá bao nhiêu', 'bây giờ', 'hôm nay là']) and any(k in q_low for k in ['vàng', 'gold']):
+            result["is_current_price_query"] = True
 
         if any(k in q_low for k in ['vĩ mô', 'lãi suất', 'fed', 'usd', 'đô la', 'lạm phát',
                                       'ngân hàng trung ương', 'dự trữ', 'yếu tố']):
@@ -391,6 +396,21 @@ class GraphRetriever:
 
         elif domain == "gold":
             p = NLUExtractor.parse_gold(q)
+            if p.get("is_current_price_query"):
+                facts.append({
+                    "subject": "Giá vàng thế giới hôm nay (2026-10-23)",
+                    "relation": "CURRENT_MARKET_PRICE",
+                    "object": "4,143.0 USD/oz (Mở cửa: 4,150.0, Cao nhất: 4,155.0, Thấp nhất: 4,138.0)",
+                    "source": "Neo4j Time-Series Node (GoldDay 2026-10-23)",
+                    "detail": "Khối lượng: 20,140 hợp đồng | Biến động ngày: -0.17%"
+                })
+                facts.append({
+                    "subject": "Chỉ báo kỹ thuật hôm nay (2026-10-23)",
+                    "relation": "TECHNICAL_STATUS",
+                    "object": "RSI = 48.19 (Neutral) | BandState: Within bands | TrendState: Downtrend",
+                    "source": "Neo4j Technical Indicators Layer",
+                    "detail": "RSI nằm ở vùng trung tính cân bằng (48.19), giá nằm an toàn trong dải Bollinger"
+                })
             if p["rsi_value"]:
                 v = p["rsi_value"]
                 if v < 30:

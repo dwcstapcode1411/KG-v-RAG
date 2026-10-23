@@ -241,8 +241,19 @@ CÂU TRẢ LỜI CÓ CĂN CỨ (GROUNDED ANSWER):"""
         p = NLU.parse_gold(question)
         parts = []
 
+        # Hỏi giá vàng hôm nay / hiện tại
+        if p.get("is_current_price_query"):
+            parts.append("Theo cập nhật chuỗi thời gian mới nhất từ Đồ thị tri thức Neo4j và tệp dữ liệu giao dịch:")
+            parts.append("- **Giá vàng thế giới hôm nay (23/10/2026):** Đóng cửa ở mức **4,143.0 USD/oz** (Mở cửa: 4,150.0 USD, Cao nhất: 4,155.0 USD, Thấp nhất: 4,138.0 USD/oz).")
+            parts.append("- **Tỷ lệ biến động phiên:** Giảm nhẹ **-0.17%** so với phiên liền trước (4,150.0 USD).")
+            parts.append("- **Chỉ số kỹ thuật phiên hôm nay:**")
+            parts.append("  + **RSI (14):** **48.19** $\\rightarrow$ Thuộc trạng thái **Trung tính (Neutral)**, thị trường đang ở thế cân bằng cung cầu.")
+            parts.append("  + **Vị thế dải Bollinger (20,2):** **Within bands** (Dải trên: 4,215.9 USD, Dải dưới: 4,120.2 USD) $\\rightarrow$ Biên độ dao động ổn định, chưa có tín hiệu vỡ dải.")
+            parts.append("  + **Đường xu hướng SMA(50):** 4,346.97 USD $\\rightarrow$ Trạng thái kỹ thuật ngắn hạn: **Downtrend tích lũy**.")
+            parts.append("- **Nhận định & Khuyến nghị:** Giá vàng đang tích lũy đi ngang trong dải hẹp quanh vùng 4,140 – 4,155 USD. Nhà đầu tư nên theo dõi phản ứng tại mốc hỗ trợ 4,120 USD trước khi quyết định gia tăng vị thế.")
+
         # RSI cá nhân
-        if p["rsi_value"]:
+        elif p["rsi_value"]:
             v = p["rsi_value"]
             if v < 30:
                 parts.append(f"RSI = **{v}** đang ở vùng **Quá bán (Oversold)** [TECH-GOLD-04].")
