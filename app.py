@@ -280,16 +280,19 @@ with st.sidebar:
     sample_questions = {
         "diabetes": [
             "Tiêu chuẩn chẩn đoán xác định bệnh đái tháo đường theo ADA là gì?",
-            "Béo phì (BMI >= 30) làm tăng nguy cơ mắc bệnh tiểu đường như thế nào?",
+            "tôi nặng 70kg cao 1m50 có nguy cơ mắc bệnh là bao nhiêu %",
+            "BMI nhỏ hơn 25 có tỷ lệ mắc bệnh là bao nhiêu?",
             "Suy luận đồ thị đã phát hiện bao nhiêu bệnh nhân có nguy cơ cao chưa được chẩn đoán?"
         ],
         "finance": [
             "Chỉ số chứng khoán nào chịu mức sụt giảm sâu nhất trong Khủng hoảng 2008?",
+            "nếu tôi đầu tư 100 triệu mà gặp khủng hoảng sụt 60% thì mất bao nhiêu tiền?",
             "Tương quan giữa chỉ số S&P 500 và DAX 40 phản ánh cơ chế lây lan khủng hoảng ra sao?",
-            "Khu vực kinh tế nào chịu cú sốc phong tỏa đại dịch COVID-19 nặng nề nhất năm 2020?"
+            "Tỷ lệ nợ DTI ở mức 48% thì rủi ro tín dụng ra sao?"
         ],
         "gold": [
             "Những yếu tố kinh tế vĩ mô nào có chiều tác động tiêu cực hoặc tích cực lên giá vàng?",
+            "RSI hiện tại là 25 thì có nên mua vàng tích trữ không?",
             "Khi RSI ở vùng Quá bán (Oversold), quy luật hồi quy trung bình sau 5 phiên diễn ra ra sao?",
             "Giá vàng đã phản ứng thế nào trước các sự kiện SVB sụp đổ và xung đột Trung Đông?"
         ]

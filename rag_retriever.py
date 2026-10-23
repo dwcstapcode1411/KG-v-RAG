@@ -15,6 +15,77 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 
+# =============================================================================
+# BỘ MỞ RỘNG TRUY VẤN (QUERY EXPANSION) ĐA MIỀN
+# =============================================================================
+class QueryExpander:
+    """Mở rộng truy vấn ngôn ngữ tự nhiên bằng cách tiêm từ đồng nghĩa & ngữ cảnh y/tế/tài chính/vàng."""
+
+    # Từ điển đồng nghĩa chuyên ngành tiếng Việt - Anh
+    SYNONYM_MAP = {
+        # Y tế
+        "tiểu đường": "đái tháo đường diabetes glucose HbA1c đường huyết insulin",
+        "béo phì": "BMI obese thừa cân overweight cân nặng thể trạng đề kháng insulin",
+        "huyết áp": "hypertension tăng huyết áp đồng mắc comorbidity tim mạch",
+        "chẩn đoán": "HbA1c tiêu chuẩn ADA glucose xét nghiệm ngưỡng",
+        "nguy cơ": "tỷ lệ mắc bệnh risk factor rủi ro phòng ngừa",
+        "thuốc": "metformin SGLT2 GLP-1 điều trị liệu pháp dược lý",
+        "tuổi": "nhóm tuổi AgeGroup lứa tuổi trung niên",
+        # Tài chính
+        "khủng hoảng": "crisis sụt giảm crash drawdown sụp đổ biến động",
+        "chứng khoán": "stock index thị trường cổ phiếu đầu tư",
+        "tương quan": "correlation liên kết lây lan contagion hệ số",
+        "tín dụng": "DTI nợ vỡ nợ default rủi ro credit score",
+        "lãi suất": "Fed thắt chặt tiền tệ rate hike nới lỏng",
+        "đầu tư": "vốn danh mục portfolio lợi nhuận thua lỗ rủi ro",
+        # Vàng
+        "vàng": "gold giá vàng kim loại quý commodity",
+        "rsi": "oversold overbought quá bán quá mua kỹ thuật technical",
+        "chiến tranh": "xung đột geopolitical safe-haven trú ẩn an toàn địa chính trị",
+        "svb": "Silicon Valley Bank sụp đổ ngân hàng banking crisis",
+        "mua vàng": "tích trữ phòng hộ safe-haven demand nhu cầu",
+        "bán vàng": "chốt lời take profit điều chỉnh correction",
+    }
+
+    # Ánh xạ từ ngôn ngữ tự nhiên sang khái niệm miền
+    DOMAIN_CONTEXT = {
+        "diabetes": "BMI béo phì thể trạng nguy cơ đái tháo đường cân nặng HbA1c glucose tiểu đường bệnh nhân chẩn đoán",
+        "finance": "chứng khoán thị trường chỉ số đầu tư rủi ro tín dụng khủng hoảng lợi suất biến động",
+        "gold": "giá vàng thị trường vàng RSI kỹ thuật vĩ mô lãi suất Fed sự kiện địa chính trị"
+    }
+
+    @classmethod
+    def expand(cls, query: str, domain: str = None) -> str:
+        """Mở rộng truy vấn bằng đồng nghĩa + ngữ cảnh miền."""
+        q_low = query.lower()
+        expansions = []
+
+        # 1. Tiêm đồng nghĩa cho từ khóa khớp
+        for trigger, synonyms in cls.SYNONYM_MAP.items():
+            if trigger in q_low:
+                expansions.append(synonyms)
+
+        # 2. Nhận diện câu hỏi chứa số liệu cá nhân
+        has_measurements = bool(
+            re.search(r'\d+\s*(?:kg|kí|cân)', q_low) or
+            re.search(r'\d+m\d+|cao\s*\d+', q_low) or
+            re.search(r'bmi\s*(?:nhỏ|dưới|lớn|trên|<|>|=)', q_low) or
+            re.search(r'hba1c\s*(?:là|=|của)', q_low) or
+            re.search(r'(?:glucose|đường huyết)\s*\d+', q_low) or
+            re.search(r'(?:dti|nợ)\s*\d+', q_low) or
+            re.search(r'rsi\s*(?:là|=|đang)?\s*\d+', q_low) or
+            re.search(r'\d+\s*(?:triệu|tỷ)', q_low)
+        )
+
+        if has_measurements and domain:
+            expansions.append(cls.DOMAIN_CONTEXT.get(domain, ""))
+
+        # 3. Ghép truy vấn gốc + mở rộng
+        if expansions:
+            return query + " " + " ".join(expansions)
+        return query
+
+
 class DocumentRetriever:
     """Bộ truy xuất tài liệu phi cấu trúc sử dụng TF-IDF và Cosine Similarity."""
 
@@ -79,13 +150,15 @@ class DocumentRetriever:
     def retrieve(self, query: str, domain: str = None, top_k: int = 3) -> List[Dict[str, Any]]:
         """
         Truy xuất Top-k đoạn văn tương đồng với câu hỏi dựa trên độ tương đồng Cosine.
-        Hỗ trợ Pre-filtering theo miền nghiệp vụ (domain).
+        Hỗ trợ Pre-filtering theo miền nghiệp vụ (domain) và Query Expansion thông minh.
         """
         if not self.chunks or self.tfidf_matrix is None:
             return []
 
-        # Ánh xạ câu hỏi vào không gian vector
-        query_vec = self.vectorizer.transform([query])
+        # Mở rộng truy vấn bằng QueryExpander đa miền
+        expanded_query = QueryExpander.expand(query, domain)
+
+        query_vec = self.vectorizer.transform([expanded_query])
         scores = cosine_similarity(query_vec, self.tfidf_matrix)[0]
 
         ranked_indices = np.argsort(scores)[::-1]

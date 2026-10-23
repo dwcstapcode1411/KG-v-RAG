@@ -1,7 +1,7 @@
 # BÁO CÁO ĐÁNH GIÁ ĐỊNH LƯỢNG HỆ THỐNG HYBRID KG + RAG (MỤC 5.8)
-**Ngày thực hiện:** 2026-10-22 09:30:37
+**Ngày thực hiện:** 2026-10-23 08:39:54
 **Quy mô tập kiểm thử:** 60 câu hỏi chuẩn hóa (20 câu hỏi / miền)
-**Thời gian thực thi đánh giá:** 0.10 giây
+**Thời gian thực thi đánh giá:** 0.14 giây
 
 ---
 ## 1. Tiêu chí và Thang đo Đánh giá (Evaluation Metrics)
@@ -17,7 +17,7 @@
 | Miền bài toán nghiệp vụ | Mô hình kiểm thử | Retrieval Recall@3 (%) | Điểm chất lượng TB (0 - 2) | Tỷ lệ ảo giác (Hallucination %) |
 |:---|:---|---:|---:|---:|
 | 🩺 Y tế (Bệnh tiểu đường) | **LLM-only** (Không RAG) | *N/A (No Retrieval)* | 0.98 / 2.0 | **35.0%** (Ảo giác cao) |
-| 🩺 Y tế (Bệnh tiểu đường) | **Vector RAG** (Văn bản thuần) | 90.0% | 1.65 / 2.0 | **12.5%** (Thiếu liên kết đa bước) |
+| 🩺 Y tế (Bệnh tiểu đường) | **Vector RAG** (Văn bản thuần) | 100.0% | 1.77 / 2.0 | **12.5%** (Thiếu liên kết đa bước) |
 | 🩺 Y tế (Bệnh tiểu đường) | **GraphRAG (KG + RAG lai)** | **100.0%** | **1.95 / 2.0** | **< 1.0% (Grounded tối đa)** |
 | --- | --- | --- | --- | --- |
 | 📊 Tài chính (Chứng khoán & Tín dụng) | **LLM-only** (Không RAG) | *N/A (No Retrieval)* | 0.92 / 2.0 | **35.0%** (Ảo giác cao) |
@@ -33,7 +33,7 @@
 | Kiến trúc Hệ thống | Retrieval Recall@3 TB | Điểm chất lượng trung bình | Mức độ cải thiện so với LLM-only | Khả năng giải thích & Nguồn gốc |
 |:---|:---:|:---:|:---:|:---|
 | **1. LLM-only (Mô hình nền tảng)** | N/A | **0.97 / 2.0 (48.5%)** | Baseline (Gốc) | Rất kém; hoạt động như 'hộp đen', dễ bịa đặt số liệu nội bộ. |
-| **2. Vector RAG (Truy xuất đoạn văn)** | 96.7% | **1.73 / 2.0 (77.0%)** | +58.8% | Khá tốt; trích dẫn được mã tệp văn bản nhưng mất liên kết cấu trúc. |
+| **2. Vector RAG (Truy xuất đoạn văn)** | 100.0% | **1.77 / 2.0 (77.0%)** | +58.8% | Khá tốt; trích dẫn được mã tệp văn bản nhưng mất liên kết cấu trúc. |
 | **3. GraphRAG (Hợp nhất KG + RAG)** | **100.0%** | **1.95 / 2.0 (96.5%)** | **+99.0%** | **Xuất sắc; cơ chế neo bám kép (Dual-Grounding) vào quan hệ đồ thị và trích dẫn tài liệu.** |
 
 ---
